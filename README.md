@@ -56,9 +56,9 @@ XRDeviceKitDemo/                 UE 工程（只用来开发、打包、跑真�
 
 | 文档 | 内容 |
 |---|---|
-| [docs/00-jni-android.md](docs/00-jni-android.md) | UE 安卓层到底怎么工作：XML 注入、JNI、`.so` 与 `aar` 的区别，附参考工程里的证据行号 |
-| [docs/01-plan.md](docs/01-plan.md) | 范围、API 三档拆分、架构、阶段验收标准、待大鹏确认的问题 |
-| [docs/02-p0-library-skeleton.md](docs/02-p0-library-skeleton.md) | P0 阶段记录：分层、四个决策、编码踩坑、编译实测结果 |
+| [docs/00-UE安卓层与JNI原理.md](docs/00-UE安卓层与JNI原理.md) | UE 安卓层到底怎么工作：XML 注入、JNI、`.so` 与 `aar` 的区别，附参考工程里的证据行号 |
+| [docs/01-插件范围与阶段规划.md](docs/01-插件范围与阶段规划.md) | 范围、API 三档拆分、架构、阶段验收标准、待大鹏确认的问题 |
+| [docs/02-P0-插件骨架与三个设备API.md](docs/02-P0-插件骨架与三个设备API.md) | P0 阶段记录：分层、四个决策、编码踩坑、编译实测结果 |
 
 ## 仓库信息
 
