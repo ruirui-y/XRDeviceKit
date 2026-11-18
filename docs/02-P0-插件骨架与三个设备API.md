@@ -143,12 +143,43 @@ Total execution time: 10.76 seconds
 
 ### 验收状态
 
-| 项 | 状态 |
-|---|---|
-| Win64 编译通过 | ✅ |
-| XML 格式合法、无 BOM、3 个 Java 方法 | ✅ |
-| UPL 被 UAT 收集（`Intermediate/Android/ActiveUPL.txt` 里能看到） | ⬜ 待安卓打包 |
-| 安卓包编译通过 | ⬜ 待安卓打包 |
-| 真机三个节点返回正确值 | ⬜ 待真机 |
+| 项 | 状态 | 证据 |
+|---|---|---|
+| Win64 编译通过 | ✅ | 7 个 action，10.76 秒，exit 0 |
+| XML 格式合法、无 BOM、3 个 Java 方法 | ✅ | `[xml]` 解析通过 |
+| UPL 被 UAT 收集 | ✅ | `Intermediate/Android/ActiveUPL.txt` 第 1 行 |
+| 安卓包编译通过 | ✅ | `XRDeviceKitDemo-arm64.apk` 144.9 MB |
+| 注入的 Java 进了 APK | ✅ | `classes13.dex` 里三个方法名全中 |
+| 真机三个节点返回正确值 | ⬜ | 待设备 |
 
-**没验证的部分就是没验证，不能因为 Win64 过了就说"通了"。** JNI 相关代码在 Win64 下整段被 `#if PLATFORM_ANDROID` 剔掉，一行都没执行过。
+### 安卓打包实测（2026-11-18 15:58）
+
+三层证据链，从构建配置一路追到 APK 二进制：
+
+```
+① ActiveUPL.txt 第 1 行
+   C:\Users\...\Plugins\XRDeviceKit\Source\XRDeviceKit\Android\XRDeviceKit_APL.xml
+
+② Intermediate/Android/arm64/src/com/epicgames/unreal/GameActivity.java（231 KB）
+   L623: public boolean XRDeviceKit_IsScreenOn()
+   L638: public float   XRDeviceKit_GetBrightness()
+   L653: public boolean XRDeviceKit_SetBrightnessPercent(int percent)
+
+③ APK 解包，逐个 dex 搜方法名
+   classes13.dex（321 KB）：三个方法名全中，且同文件内有 com/epicgames/unreal/GameActivity
+   → C++ 侧 GetMethodID(GameActivityClassID, ...) 能查到
+```
+
+**ProGuard 不会剥掉这三个方法**：引擎自带的 `proguard-project.txt` 里有
+
+```
+-keepclassmembers class com.epicgames.unreal.GameActivity {
+	public *;
+}
+```
+
+我们注入的三个方法都是 `public`，被这条规则保住。换机器、换工程都带着，不用自己加。
+
+**时间戳对得上**：`GameActivity.java` 15:57:33 → `XRDeviceKitDemo-arm64.apk` 15:58:32。
+
+**没验证的部分就是没验证，不能因为 Win64 过了就说"通了"。** JNI 相关代码在 Win64 下整段被 `#if PLATFORM_ANDROID` 剔掉，一行都没执行过；APK 里有方法名也不代表运行时能调通，还差真机那一步。
