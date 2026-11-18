@@ -17,10 +17,12 @@ public class XRDeviceKit : ModuleRules
 			"Engine",
 		});
 
+		// 剪贴板在 ApplicationCore 里（HAL/PlatformApplicationMisc.h），全平台都要
+		PrivateDependencyModuleNames.Add("ApplicationCore");
+
 		if (Target.Platform == UnrealTargetPlatform.Android)
 		{
 			// Android/AndroidApplication.h 在 ApplicationCore 模块里，Android/AndroidJNI.h 在 Launch 模块里
-			PrivateDependencyModuleNames.Add("ApplicationCore");
 			PrivateIncludePathModuleNames.Add("Launch");
 
 			string APLPath = Path.Combine(ModuleDirectory, "Android", "XRDeviceKit_APL.xml");
