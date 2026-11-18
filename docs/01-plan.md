@@ -93,6 +93,8 @@ UAndroidBridgeLibrary  UDPVRBridgeLibrary  UAndroidBridgeSubsystem
 | **P2** | 大鹏 SDK 对接（三档） | 能读手柄电量；`.so` 缺失时降级不崩 | 1~2 周（看 SDK） |
 | **P3** | 二档 ≈60 个 | 按实际拿到的权限逐条打勾 | 1~2 周 |
 
+> 进度：P0 代码已完成（Win64 编译通过、XML 校验通过），安卓打包与真机验证待做。详见 [02-p0-library-skeleton.md](02-p0-library-skeleton.md)。
+
 **P0 是唯一的验证关口**：XML 注入通不通、JNI 调不调得到、打包流程对不对，这三件事不通，后面全是空中楼阁。
 
 ---

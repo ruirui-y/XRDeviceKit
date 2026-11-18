@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  XRDeviceKit 的 Android 打包补丁（UPL）。
+  这里只注入"必须拿到 Activity 才能做"的方法；纯查询以后走独立 Java 类。
+  注入点：GameActivity.java.template 里的 gameActivityClassAdditions 占位符。
+
+  注意：insert 段里的 Java 注释一律写英文。这段源码会交给 javac 编译，
+  而 javac 的默认编码跟随平台（中文 Windows 上是 GBK），写中文注释有概率报错。
+-->
+<root xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<init>
+		<log text="XRDeviceKit: inject GameActivity additions (screen state / window brightness)"/>
+	</init>
+
+	<gameActivityImportAdditions>
+		<insert><![CDATA[
+import android.view.WindowManager;
+		]]></insert>
+	</gameActivityImportAdditions>
+
+	<gameActivityClassAdditions>
+		<insert><![CDATA[
+
+// ---- XRDeviceKit injection start ----
+// These methods are called by name from XRDeviceKitJni.cpp.
+// Renaming a method or changing its signature here requires the same change there,
+// otherwise the device build asserts with "Failed to find ...".
+
+// Whether the screen is currently in the interactive (on) state.
+public boolean XRDeviceKit_IsScreenOn()
+{
+    try
+    {
+        android.os.PowerManager pm = (android.os.PowerManager) getSystemService(android.content.Context.POWER_SERVICE);
+        return pm != null && pm.isInteractive();
+    }
+    catch (Throwable t)
+    {
+        Log.debug("XRDeviceKit_IsScreenOn failed: " + t.toString());
+        return false;
+    }
+}
+
+// Window brightness of this app: 0..1, or -1 when it follows the system brightness.
+public float XRDeviceKit_GetBrightness()
+{
+    try
+    {
+        return getWindow().getAttributes().screenBrightness;
+    }
+    catch (Throwable t)
+    {
+        Log.debug("XRDeviceKit_GetBrightness failed: " + t.toString());
+        return -1.0f;
+    }
+}
+
+// Set window brightness. The argument is an integer 0..100 (converted on the C++ side
+// to avoid the JNI varargs float promotion issue).
+public boolean XRDeviceKit_SetBrightnessPercent(int percent)
+{
+    try
+    {
+        int clamped = percent < 0 ? 0 : (percent > 100 ? 100 : percent);
+        WindowManager.LayoutParams lp = getWindow().getAttributes();
+        lp.screenBrightness = clamped / 100.0f;
+        // Writing back is required: mutating the params object alone has no effect.
+        getWindow().setAttributes(lp);
+        return true;
+    }
+    catch (Throwable t)
+    {
+        Log.debug("XRDeviceKit_SetBrightnessPercent failed: " + t.toString());
+        return false;
+    }
+}
+
+// ---- XRDeviceKit injection end ----
+
+		]]></insert>
+	</gameActivityClassAdditions>
+
+</root>

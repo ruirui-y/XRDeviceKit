@@ -1,6 +1,7 @@
 // XRDeviceKit 插件的编译脚本。
-// 现在只有模块骨架；Android 平台分支、JNI 头文件路径、大鹏 .so 的链接，等 P1 再加。
+// Android 分支负责两件事：登记 UPL（把 Java 注入 GameActivity），以及补 JNI 头文件所在的模块。
 
+using System.IO;
 using UnrealBuildTool;
 
 public class XRDeviceKit : ModuleRules
@@ -15,5 +16,15 @@ public class XRDeviceKit : ModuleRules
 			"CoreUObject",
 			"Engine",
 		});
+
+		if (Target.Platform == UnrealTargetPlatform.Android)
+		{
+			// Android/AndroidApplication.h 在 ApplicationCore 模块里，Android/AndroidJNI.h 在 Launch 模块里
+			PrivateDependencyModuleNames.Add("ApplicationCore");
+			PrivateIncludePathModuleNames.Add("Launch");
+
+			string APLPath = Path.Combine(ModuleDirectory, "Android", "XRDeviceKit_APL.xml");
+			AdditionalPropertiesForReceipt.Add("AndroidPlugin", APLPath);
+		}
 	}
 }
