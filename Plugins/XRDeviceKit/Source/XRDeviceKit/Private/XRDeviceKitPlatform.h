@@ -86,8 +86,7 @@ FString GetAppLabel();                                                          
 bool StartApp(const FString& PackageName);                                          // 拉起指定包
 
 // ---------- 音频（补充） ----------
-int32 GetMaxVolume();                                                               // 最大音量档位
-bool SetVolume(int32 Level);                                                        // 设置音量档位
+bool SetVolume(int32 Percent);                                                      // 设置音量百分比 0~100
 
 // ---------- 显示（补充） ----------
 int32 GetSystemBrightness();                                                        // 系统亮度 0~255

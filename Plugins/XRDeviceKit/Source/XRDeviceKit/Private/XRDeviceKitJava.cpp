@@ -390,19 +390,10 @@ bool XRDeviceKit::Java::StartApp(const FString& PackageName)
 
 // ==================== 音频（补充） ====================
 
-int32 XRDeviceKit::Java::GetMaxVolume()
+bool XRDeviceKit::Java::SetVolume(int32 Percent)
 {
 #if PLATFORM_ANDROID
-	return CallInt("GetMaxVolume");
-#else
-	return 0;
-#endif
-}
-
-bool XRDeviceKit::Java::SetVolume(int32 Level)
-{
-#if PLATFORM_ANDROID
-	return CallBoolWithInt("SetVolume", Level);
+	return CallBoolWithInt("SetVolume", Percent);
 #else
 	return false;
 #endif

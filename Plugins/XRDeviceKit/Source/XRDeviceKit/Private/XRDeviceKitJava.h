@@ -47,8 +47,7 @@ FString GetAppLabel();                                                          
 bool StartApp(const FString& PackageName);                                          // 拉起指定包，受 Android 11 包可见性限制
 
 // ---------- 音频（补充） ----------
-int32 GetMaxVolume();                                                               // 最大音量档位
-bool SetVolume(int32 Level);                                                        // 设置音量档位
+bool SetVolume(int32 Percent);                                                      // 设置音量百分比 0~100
 
 // ---------- 显示（补充） ----------
 int32 GetSystemBrightness();                                                        // 系统亮度（0~255），失败 -1

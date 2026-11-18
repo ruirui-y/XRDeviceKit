@@ -473,19 +473,10 @@ bool XRDeviceKit::Platform::StartApp(const FString& PackageName)
 
 // ==================== 音频（补充） ====================
 
-int32 XRDeviceKit::Platform::GetMaxVolume()
+bool XRDeviceKit::Platform::SetVolume(int32 Percent)
 {
 #if PLATFORM_ANDROID
-	return XRDeviceKit::Java::GetMaxVolume();
-#else
-	return 0;
-#endif
-}
-
-bool XRDeviceKit::Platform::SetVolume(int32 Level)
-{
-#if PLATFORM_ANDROID
-	return XRDeviceKit::Java::SetVolume(Level);
+	return XRDeviceKit::Java::SetVolume(Percent);
 #else
 	return false;
 #endif
@@ -534,7 +525,11 @@ FString XRDeviceKit::Platform::PasteFromClipboard()
 
 FString XRDeviceKit::Platform::GetProjectVersion()
 {
-	return FString(FApp::GetBuildVersion());
+	// 注意不能用 FApp::GetBuildVersion：那个返回的是引擎构建号（++UE5+Release-...），
+	// 工程版本在 Project Settings → Project → Version 里，存于 DefaultGame.ini
+	FString ProjectVersion;
+	GConfig->GetString(TEXT("/Script/EngineSettings.GeneralProjectSettings"), TEXT("ProjectVersion"), ProjectVersion, GGameIni);
+	return ProjectVersion;
 }
 
 void XRDeviceKit::Platform::ShareURL(const FString& URL, const FString& Description)

@@ -87,7 +87,6 @@ void UXRDeviceKitSmokeTestSubsystem::RunSmokeTest()
 
 	// ---- 音频 ----
 	SMOKE_I("GetDeviceVolume", L::GetDeviceVolume());
-	SMOKE_I("GetMaxVolume", L::GetMaxVolume());
 	SMOKE_B("IsHeadphonesPluggedIn", L::IsHeadphonesPluggedIn());
 
 	// ---- 存储 ----

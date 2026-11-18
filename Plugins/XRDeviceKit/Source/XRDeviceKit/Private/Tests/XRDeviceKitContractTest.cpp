@@ -28,7 +28,7 @@ bool FXRDeviceKitContractTest::RunTest(const FString& Parameters)
 			++CallableCount;
 		}
 	}
-	TestTrue(FString::Printf(TEXT("蓝图节点数量应该 >= 56，实际 %d"), CallableCount), CallableCount >= 56);
+	TestTrue(FString::Printf(TEXT("蓝图节点数量应该 >= 55，实际 %d"), CallableCount), CallableCount >= 55);
 
 	// ---- 设备 / 电源 ----
 	TestEqual(TEXT("电量在非 Android 平台返回 -1"), L::GetBatteryLevel(), -1);
@@ -71,9 +71,8 @@ bool FXRDeviceKitContractTest::RunTest(const FString& Parameters)
 	TestFalse(TEXT("非 Android 无 WiFi 判断"), L::HasWiFiConnection());
 
 	// ---- 音频 ----
-	TestTrue(TEXT("音量档位 >= -1（-1 表示拿不到）"), L::GetDeviceVolume() >= -1);
-	TestEqual(TEXT("最大音量非 Android 为 0"), L::GetMaxVolume(), 0);
-	TestFalse(TEXT("非 Android 设音量返回 false"), L::SetVolume(1));
+	TestTrue(TEXT("音量百分比 >= -1（-1 表示拿不到）"), L::GetDeviceVolume() >= -1);
+	TestFalse(TEXT("非 Android 设音量返回 false"), L::SetVolume(50));
 	TestFalse(TEXT("非 Android 无耳机判断"), L::IsHeadphonesPluggedIn());
 
 	// ---- 存储 ----

@@ -50,7 +50,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Device")
 	static int32 GetAndroidMajorVersion();
 
-	// CPU 型号字符串。拿不到返回空串。
+	// CPU 型号字符串。注意：安卓上引擎返回的是设备标识（实测等于型号 P1Max），拿不到返回空串。
 	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Device")
 	static FString GetCPUBrand();
 
@@ -107,7 +107,7 @@ public:
 
 	// ---------------- 音频 ----------------
 
-	// 媒体音量档位 0~15（安卓的档位数不固定，以实际设备为准）。拿不到返回 -1。
+	// 媒体音量百分比 0~100（引擎已把档位换算成百分比）。拿不到返回 -1。
 	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Audio")
 	static int32 GetDeviceVolume();
 
@@ -241,13 +241,9 @@ public:
 
 	// ---------------- 音频（补充） ----------------
 
-	// 媒体音量最大档位，通常是 15。拿不到返回 0。
+	// 设置媒体音量，入参 0~100 百分比，内部换算成设备自己的档位。返回 false 表示平台不支持或失败。
 	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Audio")
-	static int32 GetMaxVolume();
-
-	// 设置媒体音量档位。返回 false 表示平台不支持或失败。
-	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Audio")
-	static bool SetVolume(int32 Level);
+	static bool SetVolume(int32 Percent);
 
 	// ---------------- 显示（补充） ----------------
 

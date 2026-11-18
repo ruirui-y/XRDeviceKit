@@ -277,14 +277,11 @@ bool UXRDeviceKitLibrary::StartApp(const FString& PackageName)
 
 // ==================== 音频（补充） ====================
 
-int32 UXRDeviceKitLibrary::GetMaxVolume()
+bool UXRDeviceKitLibrary::SetVolume(int32 Percent)
 {
-	return XRDeviceKit::Platform::GetMaxVolume();
-}
-
-bool UXRDeviceKitLibrary::SetVolume(int32 Level)
-{
-	return XRDeviceKit::Platform::SetVolume(Level);
+	// 蓝图可能传任意整数，先夹到 0~100 的百分比区间
+	const int32 Clamped = FMath::Clamp(Percent, 0, 100);
+	return XRDeviceKit::Platform::SetVolume(Clamped);
 }
 
 // ==================== 显示（补充） ====================

@@ -374,23 +374,10 @@ public final class XRBridge
     // Audio (extra)
     // ------------------------------------------------------------------
 
-    // Highest media volume index. Devices usually report 15.
-    public static int GetMaxVolume()
-    {
-        try
-        {
-            android.media.AudioManager am =
-                (android.media.AudioManager) sContext.getSystemService(Context.AUDIO_SERVICE);
-            return am == null ? 0 : am.getStreamMaxVolume(android.media.AudioManager.STREAM_MUSIC);
-        }
-        catch (Throwable t)
-        {
-            return 0;
-        }
-    }
-
-    // Set media volume by index. Out of range values are rejected by the system.
-    public static boolean SetVolume(int level)
+    // Set media volume by percentage (0..100).
+    // The engine reports volume as 0..100, so this takes the same scale and converts
+    // to the platform's own index steps internally.
+    public static boolean SetVolume(int percent)
     {
         try
         {
@@ -400,8 +387,12 @@ public final class XRBridge
             {
                 return false;
             }
+            int maxIndex = am.getStreamMaxVolume(android.media.AudioManager.STREAM_MUSIC);
+            int index = Math.round(percent / 100.0f * maxIndex);
+            // clamp: setStreamVolume with an out of range index throws on some devices
+            index = Math.max(0, Math.min(maxIndex, index));
             // flags 0: no UI shown, no sound played
-            am.setStreamVolume(android.media.AudioManager.STREAM_MUSIC, level, 0);
+            am.setStreamVolume(android.media.AudioManager.STREAM_MUSIC, index, 0);
             return true;
         }
         catch (Throwable t)
