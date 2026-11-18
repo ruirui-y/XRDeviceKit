@@ -38,7 +38,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Device")
 	static float GetCPUTemperature();
 
-	// 设备唯一 ID，卸载重装会变。
+	// 设备唯一 ID，卸载重装会变。非 Android 平台可能返回空串（实测 Windows 上为空）。
 	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Device")
 	static FString GetDeviceId();
 
@@ -107,7 +107,7 @@ public:
 
 	// ---------------- 音频 ----------------
 
-	// 媒体音量档位 0~15（安卓的档位数不固定，以实际设备为准）。
+	// 媒体音量档位 0~15（安卓的档位数不固定，以实际设备为准）。拿不到返回 -1。
 	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Audio")
 	static int32 GetDeviceVolume();
 

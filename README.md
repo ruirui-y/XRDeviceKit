@@ -2,7 +2,7 @@
 
 面向大鹏 DPVR 头显的 UE5 设备能力插件。把 Android 系统接口（电量、音量、亮度、屏幕状态、应用管控）和 DPVR SDK（手柄、投屏、企业管控）统一封装成蓝图可直接拖用的 UFUNCTION 节点，调用方不需要知道底层是 JNI 还是 native `.so`。
 
-> 当前状态：**P1 第四批完成**。56 个蓝图节点；独立 Java 模块已承载 27 个 Java 能力；真机取值待验证。
+> 当前状态：**P1 第四批 + 测试三件套完成**。56 个蓝图节点；契约测试通过（exit 0）；APK 符号检查全过；真机冒烟待设备。
 
 ## 目录结构
 
@@ -45,6 +45,24 @@ XRDeviceKitDemo/                 UE 工程（只用来开发、打包、跑真�
 
 > `.sln` 和 `Binaries/`、`Intermediate/`、`Saved/` 都在 `.gitignore` 里，新克隆的仓库必须重新生成一次。
 
+## 测试
+
+三层，各自负责不同的问题：
+
+```powershell
+# 1. 契约测试：56 个节点的默认值与注册数量（编辑器，10 秒）
+& "C:\Program Files\Epic Games\UE_5.5\Engine\Binaries\Win64\UnrealEditor-Cmd.exe" `
+  "C:\Users\Mars\UE5Project\XRDeviceKitDemo\XRDeviceKitDemo.uproject" `
+  -ExecCmds="Automation RunTests XRDeviceKit;Quit" -unattended -nop4 -nosplash -nullrhi -log
+# 结果看 Saved/Logs/XRDeviceKitDemo.log，不看 stdout，搜 "Test Completed"
+
+# 2. APK 检查：符号有没有进包（打包后，2 秒）
+pwsh Tools/verify_apk.ps1
+
+# 3. 真机冒烟：Config/DefaultGame.ini 里加 [XRDeviceKit] SmokeTestOnStartup=True，装包后
+adb logcat -s UE:V | findstr "SMOKE|"
+```
+
 ## 开发计划
 
 | 阶段 | 内容 | 状态 |
@@ -65,6 +83,7 @@ XRDeviceKitDemo/                 UE 工程（只用来开发、打包、跑真�
 | [docs/04-P1第二批-Java模块与独立Java类.md](docs/04-P1第二批-Java模块与独立Java类.md) | P1 第二批：独立 Java 模块怎么搭、拷贝路径算错、gradle 注释踩坑、dex 验证 |
 | [docs/05-P1第三批-应用信息与屏幕存储.md](docs/05-P1第三批-应用信息与屏幕存储.md) | P1 第三批：15 个 Java 能力、通用调用器、UP-TO-DATE 疑云的排除 |
 | [docs/06-P1第四批-构建信息与音量.md](docs/06-P1第四批-构建信息与音量.md) | P1 第四批：12 个节点、包可见性限制、亮度只读的取舍 |
+| [docs/07-测试-契约与冒烟.md](docs/07-测试-契约与冒烟.md) | 测试三件套：契约测试、真机冒烟、APK 检查脚本 |
 
 ## 仓库信息
 
