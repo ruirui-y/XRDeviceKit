@@ -23,7 +23,9 @@ void UXRDeviceKitSmokeTestSubsystem::Initialize(FSubsystemCollectionBase& Collec
 {
 	Super::Initialize(Collection);
 
-	bool bRunOnStartup = false;
+	// 默认开：打包出来的 Development 包一装就自动跑，省得再去改配置。
+	// Shipping 默认关；ini 里有配置时以 ini 为准。
+	bool bRunOnStartup = !UE_BUILD_SHIPPING;
 	GConfig->GetBool(TEXT("XRDeviceKit"), TEXT("SmokeTestOnStartup"), bRunOnStartup, GGameIni);
 	if (!bRunOnStartup)
 	{
