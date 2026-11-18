@@ -103,8 +103,7 @@ void UXRDeviceKitSmokeTestSubsystem::RunSmokeTest()
 	SMOKE_L("GetFirstInstallTimeMs", L::GetFirstInstallTimeMs());
 	SMOKE_L("GetLastUpdateTimeMs", L::GetLastUpdateTimeMs());
 
-	// ---- 系统 ----
-	SMOKE_L("GetUptimeSeconds", L::GetUptimeSeconds());
+	// ---- 系统 ----	SMOKE_L("GetUptimeSeconds", L::GetUptimeSeconds());
 	SMOKE_S("GetTimeZoneId", L::GetTimeZoneId());
 	SMOKE_S("GetLanguageTag", L::GetLanguageTag());
 	SMOKE_S("GetProjectVersion", L::GetProjectVersion());
@@ -112,6 +111,10 @@ void UXRDeviceKitSmokeTestSubsystem::RunSmokeTest()
 	// 剪贴板：写进去再读出来，验证往返一致
 	L::CopyToClipboard(TEXT("XRDeviceKitSmoke"));
 	SMOKE_S("PasteFromClipboard", L::PasteFromClipboard());
+
+	// ---- 性能 ----
+	SMOKE_F("GetRenderFPS", L::GetRenderFPS());
+	SMOKE_F("GetFrameTimeMs", L::GetFrameTimeMs());
 
 	UE_LOG(LogXRDeviceKitSmoke, Display, TEXT("SMOKE|__end=1"));
 }

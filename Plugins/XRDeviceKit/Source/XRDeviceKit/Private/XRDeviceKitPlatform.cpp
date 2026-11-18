@@ -10,6 +10,9 @@
 
 DEFINE_LOG_CATEGORY_STATIC(LogXRDeviceKit, Log, All);
 
+// 引擎每秒更新一次的平滑帧率，和 stat fps 显示的是同一个值
+extern ENGINE_API float GAverageFPS;
+
 namespace
 {
 // 字节换成 MB，除不尽向下取整，展示用够了
@@ -500,6 +503,19 @@ bool XRDeviceKit::Platform::IsNightMode()
 #else
 	return false;
 #endif
+}
+
+// ==================== 性能 ====================
+
+float XRDeviceKit::Platform::GetRenderFPS()
+{
+	return GAverageFPS;
+}
+
+float XRDeviceKit::Platform::GetFrameTimeMs()
+{
+	// 刚启动时 GAverageFPS 还是 0，直接返回 0，别做除零
+	return GAverageFPS > 0.0f ? (1000.0f / GAverageFPS) : 0.0f;
 }
 
 FString XRDeviceKit::Platform::GetPackageName()

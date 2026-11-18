@@ -296,6 +296,18 @@ bool UXRDeviceKitLibrary::IsNightMode()
 	return XRDeviceKit::Platform::IsNightMode();
 }
 
+// ==================== 性能 ====================
+
+float UXRDeviceKitLibrary::GetRenderFPS()
+{
+	return XRDeviceKit::Platform::GetRenderFPS();
+}
+
+float UXRDeviceKitLibrary::GetFrameTimeMs()
+{
+	return XRDeviceKit::Platform::GetFrameTimeMs();
+}
+
 // ==================== 振动 ====================
 
 void UXRDeviceKitLibrary::StartHaptics(int32 Strength)

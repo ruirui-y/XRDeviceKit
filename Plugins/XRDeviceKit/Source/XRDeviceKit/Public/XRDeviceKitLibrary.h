@@ -255,6 +255,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Display")
 	static bool IsNightMode();
 
+	// ---------------- 性能 ----------------
+
+	// 引擎平滑后的渲染帧率（和 stat fps 显示的一致）。刚启动没统计出来时返回 0。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Performance")
+	static float GetRenderFPS();
+
+	// 每帧耗时（毫秒）= 1000 / GetRenderFPS。帧率为 0 时返回 0。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Performance")
+	static float GetFrameTimeMs();
+
 	// ---------------- 振动 ----------------
 
 	// 触发一次振动。Strength：0 轻 / 1 中 / 2 重，越界按中处理。

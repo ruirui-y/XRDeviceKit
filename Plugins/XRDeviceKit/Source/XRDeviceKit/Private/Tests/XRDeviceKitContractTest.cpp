@@ -28,7 +28,7 @@ bool FXRDeviceKitContractTest::RunTest(const FString& Parameters)
 			++CallableCount;
 		}
 	}
-	TestTrue(FString::Printf(TEXT("蓝图节点数量应该 >= 55，实际 %d"), CallableCount), CallableCount >= 55);
+	TestTrue(FString::Printf(TEXT("蓝图节点数量应该 >= 57，实际 %d"), CallableCount), CallableCount >= 57);
 
 	// ---- 设备 / 电源 ----
 	TestEqual(TEXT("电量在非 Android 平台返回 -1"), L::GetBatteryLevel(), -1);
@@ -100,6 +100,10 @@ bool FXRDeviceKitContractTest::RunTest(const FString& Parameters)
 	const FString ClipboardProbe = TEXT("XRDeviceKitContractProbe");
 	L::CopyToClipboard(ClipboardProbe);
 	TestEqual(TEXT("剪贴板往返一致"), L::PasteFromClipboard(), ClipboardProbe);
+
+	// ---- 性能 ----
+	TestTrue(TEXT("渲染帧率 >= 0"), L::GetRenderFPS() >= 0.0f);
+	TestTrue(TEXT("帧耗时 >= 0"), L::GetFrameTimeMs() >= 0.0f);
 
 	// ---- 振动：只要不崩就算过 ----
 	L::StartHaptics(1);

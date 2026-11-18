@@ -91,5 +91,9 @@ bool SetVolume(int32 Percent);                                                  
 // ---------- 显示（补充） ----------
 int32 GetSystemBrightness();                                                        // 系统亮度 0~255
 bool IsNightMode();                                                                 // 是否深色模式
+
+// ---------- 性能 ----------
+float GetRenderFPS();                                                               // 引擎平滑帧率
+float GetFrameTimeMs();                                                             // 每帧毫秒
 }
 }
