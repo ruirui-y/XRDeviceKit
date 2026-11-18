@@ -18,6 +18,10 @@ Saved/
 # ---- 打包产物 ----
 Pack/
 
+# ---- UAT 打包时自动生成的安卓工程骨架，属于产物不是源码 ----
+Build/Android/
+Build/Android_ASTC/
+
 # ---- 系统垃圾 ----
 .DS_Store
 Thumbs.db
