@@ -42,6 +42,7 @@ int32 GetDeviceVolume();                                                        
 bool IsHeadphonesPluggedIn();                                                       // 是否插着耳机
 
 // ---------- 系统 ----------
+FString GetPackageName();                                                           // 运行中的包名
 void CopyToClipboard(const FString& Text);                                          // 写剪贴板
 FString PasteFromClipboard();                                                       // 读剪贴板
 FString GetProjectVersion();                                                        // 工程版本号

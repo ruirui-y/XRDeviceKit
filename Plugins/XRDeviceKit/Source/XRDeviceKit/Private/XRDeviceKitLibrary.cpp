@@ -125,6 +125,11 @@ bool UXRDeviceKitLibrary::IsHeadphonesPluggedIn()
 
 // ==================== 系统 ====================
 
+FString UXRDeviceKitLibrary::GetPackageName()
+{
+	return XRDeviceKit::Platform::GetPackageName();
+}
+
 void UXRDeviceKitLibrary::CopyToClipboard(const FString& Text)
 {
 	XRDeviceKit::Platform::CopyToClipboard(Text);

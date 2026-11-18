@@ -13,9 +13,26 @@
 		<log text="XRDeviceKit: inject GameActivity additions (screen state / window brightness)"/>
 	</init>
 
+	<!-- 把 JavaLibs/xrbridge 整个模块拷进打包目录；模块里加文件不用改这里。
+	     PluginDir 是这份 XML 所在目录（Source/XRDeviceKit/Android），要上三级才是插件根 -->
+	<prebuildCopies>
+		<copyDir src="$S(PluginDir)/../../../JavaLibs/xrbridge"
+				 dst="$S(BuildDir)/JavaLibs/xrbridge"/>
+	</prebuildCopies>
+
+	<!-- 让 app 依赖这个 Java 模块，C++ 才能 FindJavaClass 找到它 -->
+	<buildGradleAdditions>
+		<insert>
+dependencies {
+    implementation project(':xrbridge')
+}
+		</insert>
+	</buildGradleAdditions>
+
 	<gameActivityImportAdditions>
 		<insert><![CDATA[
 import android.view.WindowManager;
+import com.xrdevicekit.bridge.XRBridge;
 		]]></insert>
 	</gameActivityImportAdditions>
 
@@ -80,5 +97,21 @@ public boolean XRDeviceKit_SetBrightnessPercent(int percent)
 
 		]]></insert>
 	</gameActivityClassAdditions>
+
+	<!-- 启动时把自己的 Application Context 交给 XRBridge，之后静态方法才有上下文可用 -->
+	<gameActivityOnCreateAdditions>
+		<insert><![CDATA[
+        // XRDeviceKit: hand the application context to the bridge.
+        // Wrapped in try/catch so a missing module never crashes app startup.
+        try
+        {
+            XRBridge.Init(getApplicationContext());
+        }
+        catch (Throwable t)
+        {
+            Log.debug("XRDeviceKit: XRBridge.Init failed: " + t.toString());
+        }
+		]]></insert>
+	</gameActivityOnCreateAdditions>
 
 </root>

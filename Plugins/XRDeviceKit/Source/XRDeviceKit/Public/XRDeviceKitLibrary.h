@@ -117,6 +117,10 @@ public:
 
 	// ---------------- 系统 ----------------
 
+	// 运行中的包名，例如 com.YourCompany.XRDeviceKitDemo。非 Android 平台返回空串。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|System")
+	static FString GetPackageName();
+
 	// 把文本写入系统剪贴板。
 	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|System")
 	static void CopyToClipboard(const FString& Text);

@@ -4,6 +4,7 @@
 
 #include "XRDeviceKitPlatform.h"
 #include "XRDeviceKitJni.h"
+#include "XRDeviceKitJava.h"
 #include "HAL/PlatformApplicationMisc.h"
 #include "Misc/App.h"
 
@@ -252,6 +253,15 @@ bool XRDeviceKit::Platform::IsHeadphonesPluggedIn()
 }
 
 // ==================== 系统 ====================
+
+FString XRDeviceKit::Platform::GetPackageName()
+{
+#if PLATFORM_ANDROID
+	return XRDeviceKit::Java::GetPackageName();
+#else
+	return FString();
+#endif
+}
 
 void XRDeviceKit::Platform::CopyToClipboard(const FString& Text)
 {
