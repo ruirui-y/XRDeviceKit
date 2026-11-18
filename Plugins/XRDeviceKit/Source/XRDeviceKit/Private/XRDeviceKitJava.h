@@ -33,5 +33,25 @@ int64 GetExternalTotalMegabytes();                                              
 int64 GetUptimeSeconds();                                                           // 开机时长（秒），失败 -1
 FString GetTimeZoneId();                                                            // 时区 ID，如 Asia/Shanghai
 FString GetLanguageTag();                                                           // 语言标签，如 zh-CN
+
+// ---------- 设备构建信息 ----------
+FString GetManufacturer();                                                          // 厂商，如 DPVR
+FString GetModel();                                                                 // 型号，如 DPVR E4
+FString GetDeviceName();                                                            // 设备代号（Build.DEVICE）
+FString GetSupportedABIs();                                                         // 支持的 ABI，逗号分隔
+
+// ---------- 应用信息（补充） ----------
+int64 GetFirstInstallTimeMs();                                                      // 首次安装时间（毫秒），失败 -1
+int64 GetLastUpdateTimeMs();                                                        // 最后更新时间（毫秒），失败 -1
+FString GetAppLabel();                                                              // 应用显示名
+bool StartApp(const FString& PackageName);                                          // 拉起指定包，受 Android 11 包可见性限制
+
+// ---------- 音频（补充） ----------
+int32 GetMaxVolume();                                                               // 最大音量档位
+bool SetVolume(int32 Level);                                                        // 设置音量档位
+
+// ---------- 显示（补充） ----------
+int32 GetSystemBrightness();                                                        // 系统亮度（0~255），失败 -1
+bool IsNightMode();                                                                 // 是否深色模式
 }
 }

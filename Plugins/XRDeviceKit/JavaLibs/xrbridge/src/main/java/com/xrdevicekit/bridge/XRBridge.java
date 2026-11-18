@@ -245,6 +245,208 @@ public final class XRBridge
     }
 
     // ------------------------------------------------------------------
+    // Device build info
+    // ------------------------------------------------------------------
+
+    // Manufacturer, e.g. "DPVR" or "PICO".
+    public static String GetManufacturer()
+    {
+        try
+        {
+            return android.os.Build.MANUFACTURER;
+        }
+        catch (Throwable t)
+        {
+            return "";
+        }
+    }
+
+    // Marketing model name, e.g. "PICO 4".
+    public static String GetModel()
+    {
+        try
+        {
+            return android.os.Build.MODEL;
+        }
+        catch (Throwable t)
+        {
+            return "";
+        }
+    }
+
+    // Industrial device name (ro.product.device), often the codename.
+    public static String GetDeviceName()
+    {
+        try
+        {
+            return android.os.Build.DEVICE;
+        }
+        catch (Throwable t)
+        {
+            return "";
+        }
+    }
+
+    // Supported ABIs, comma separated, e.g. "arm64-v8a,armeabi-v7a".
+    public static String GetSupportedABIs()
+    {
+        try
+        {
+            return android.text.TextUtils.join(",", android.os.Build.SUPPORTED_ABIS);
+        }
+        catch (Throwable t)
+        {
+            return "";
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // App info (extra)
+    // ------------------------------------------------------------------
+
+    // First install time in milliseconds since epoch, or -1.
+    public static long GetFirstInstallTimeMs()
+    {
+        try
+        {
+            PackageInfo info = ReadPackageInfo(sContext.getPackageName());
+            return info == null ? -1L : info.firstInstallTime;
+        }
+        catch (Throwable t)
+        {
+            return -1L;
+        }
+    }
+
+    // Last update time in milliseconds since epoch, or -1.
+    public static long GetLastUpdateTimeMs()
+    {
+        try
+        {
+            PackageInfo info = ReadPackageInfo(sContext.getPackageName());
+            return info == null ? -1L : info.lastUpdateTime;
+        }
+        catch (Throwable t)
+        {
+            return -1L;
+        }
+    }
+
+    // Display name shown under the launcher icon, e.g. "XRDeviceKitDemo".
+    public static String GetAppLabel()
+    {
+        try
+        {
+            android.content.pm.ApplicationInfo info = sContext.getApplicationInfo();
+            return String.valueOf(sContext.getPackageManager().getApplicationLabel(info));
+        }
+        catch (Throwable t)
+        {
+            return "";
+        }
+    }
+
+    // Launch another app by package name.
+    // Android 11+ package visibility: a package that is not declared in the manifest
+    // <queries> block is invisible here, so this returns false even when it is installed.
+    public static boolean StartApp(String packageName)
+    {
+        try
+        {
+            android.content.Intent intent =
+                sContext.getPackageManager().getLaunchIntentForPackage(packageName);
+            if (intent == null)
+            {
+                return false;
+            }
+            intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+                | android.content.Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+            sContext.startActivity(intent);
+            return true;
+        }
+        catch (Throwable t)
+        {
+            return false;
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // Audio (extra)
+    // ------------------------------------------------------------------
+
+    // Highest media volume index. Devices usually report 15.
+    public static int GetMaxVolume()
+    {
+        try
+        {
+            android.media.AudioManager am =
+                (android.media.AudioManager) sContext.getSystemService(Context.AUDIO_SERVICE);
+            return am == null ? 0 : am.getStreamMaxVolume(android.media.AudioManager.STREAM_MUSIC);
+        }
+        catch (Throwable t)
+        {
+            return 0;
+        }
+    }
+
+    // Set media volume by index. Out of range values are rejected by the system.
+    public static boolean SetVolume(int level)
+    {
+        try
+        {
+            android.media.AudioManager am =
+                (android.media.AudioManager) sContext.getSystemService(Context.AUDIO_SERVICE);
+            if (am == null)
+            {
+                return false;
+            }
+            // flags 0: no UI shown, no sound played
+            am.setStreamVolume(android.media.AudioManager.STREAM_MUSIC, level, 0);
+            return true;
+        }
+        catch (Throwable t)
+        {
+            return false;
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // Display (extra)
+    // ------------------------------------------------------------------
+
+    // System screen brightness in the platform's own scale (usually 0..255), or -1.
+    // Reading needs no permission; writing needs WRITE_SETTINGS, so there is no setter here.
+    public static int GetSystemBrightness()
+    {
+        try
+        {
+            return android.provider.Settings.System.getInt(
+                sContext.getContentResolver(),
+                android.provider.Settings.System.SCREEN_BRIGHTNESS,
+                -1);
+        }
+        catch (Throwable t)
+        {
+            return -1;
+        }
+    }
+
+    // True when the system is in dark mode.
+    public static boolean IsNightMode()
+    {
+        try
+        {
+            int mode = sContext.getResources().getConfiguration().uiMode
+                & android.content.res.Configuration.UI_MODE_NIGHT_MASK;
+            return mode == android.content.res.Configuration.UI_MODE_NIGHT_YES;
+        }
+        catch (Throwable t)
+        {
+            return false;
+        }
+    }
+
+    // ------------------------------------------------------------------
     // internal helpers
     // ------------------------------------------------------------------
 

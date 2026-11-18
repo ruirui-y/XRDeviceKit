@@ -72,5 +72,25 @@ void ShareURL(const FString& URL, const FString& Description);                  
 // ---------- 振动 ----------
 void StartHaptics(int32 Strength);                                                  // 0 轻 / 1 中 / 2 重
 void StopHaptics();                                                                 // 停止并释放振动资源
+
+// ---------- 设备构建信息 ----------
+FString GetManufacturer();                                                          // 厂商，如 DPVR
+FString GetModel();                                                                 // 型号
+FString GetDeviceName();                                                            // 设备代号
+FString GetSupportedABIs();                                                         // 支持的 ABI
+
+// ---------- 应用信息（补充） ----------
+int64 GetFirstInstallTimeMs();                                                      // 首次安装时间（毫秒）
+int64 GetLastUpdateTimeMs();                                                        // 最后更新时间（毫秒）
+FString GetAppLabel();                                                              // 应用显示名
+bool StartApp(const FString& PackageName);                                          // 拉起指定包
+
+// ---------- 音频（补充） ----------
+int32 GetMaxVolume();                                                               // 最大音量档位
+bool SetVolume(int32 Level);                                                        // 设置音量档位
+
+// ---------- 显示（补充） ----------
+int32 GetSystemBrightness();                                                        // 系统亮度 0~255
+bool IsNightMode();                                                                 // 是否深色模式
 }
 }

@@ -231,6 +231,74 @@ void UXRDeviceKitLibrary::ShareURL(const FString& URL, const FString& Descriptio
 	XRDeviceKit::Platform::ShareURL(URL, Description);
 }
 
+// ==================== 设备构建信息 ====================
+
+FString UXRDeviceKitLibrary::GetManufacturer()
+{
+	return XRDeviceKit::Platform::GetManufacturer();
+}
+
+FString UXRDeviceKitLibrary::GetModel()
+{
+	return XRDeviceKit::Platform::GetModel();
+}
+
+FString UXRDeviceKitLibrary::GetDeviceName()
+{
+	return XRDeviceKit::Platform::GetDeviceName();
+}
+
+FString UXRDeviceKitLibrary::GetSupportedABIs()
+{
+	return XRDeviceKit::Platform::GetSupportedABIs();
+}
+
+// ==================== 应用信息（补充） ====================
+
+int64 UXRDeviceKitLibrary::GetFirstInstallTimeMs()
+{
+	return XRDeviceKit::Platform::GetFirstInstallTimeMs();
+}
+
+int64 UXRDeviceKitLibrary::GetLastUpdateTimeMs()
+{
+	return XRDeviceKit::Platform::GetLastUpdateTimeMs();
+}
+
+FString UXRDeviceKitLibrary::GetAppLabel()
+{
+	return XRDeviceKit::Platform::GetAppLabel();
+}
+
+bool UXRDeviceKitLibrary::StartApp(const FString& PackageName)
+{
+	return XRDeviceKit::Platform::StartApp(PackageName);
+}
+
+// ==================== 音频（补充） ====================
+
+int32 UXRDeviceKitLibrary::GetMaxVolume()
+{
+	return XRDeviceKit::Platform::GetMaxVolume();
+}
+
+bool UXRDeviceKitLibrary::SetVolume(int32 Level)
+{
+	return XRDeviceKit::Platform::SetVolume(Level);
+}
+
+// ==================== 显示（补充） ====================
+
+int32 UXRDeviceKitLibrary::GetSystemBrightness()
+{
+	return XRDeviceKit::Platform::GetSystemBrightness();
+}
+
+bool UXRDeviceKitLibrary::IsNightMode()
+{
+	return XRDeviceKit::Platform::IsNightMode();
+}
+
 // ==================== 振动 ====================
 
 void UXRDeviceKitLibrary::StartHaptics(int32 Strength)

@@ -203,6 +203,62 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|System")
 	static void ShareURL(const FString& URL, const FString& Description);
 
+	// ---------------- 设备构建信息 ----------------
+
+	// 厂商，例如 "DPVR"。非 Android 平台返回空串。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Device")
+	static FString GetManufacturer();
+
+	// 型号，例如 "DPVR E4"。非 Android 平台返回空串。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Device")
+	static FString GetModel();
+
+	// 设备代号（Build.DEVICE）。非 Android 平台返回空串。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Device")
+	static FString GetDeviceName();
+
+	// 支持的 ABI，逗号分隔，例如 "arm64-v8a,armeabi-v7a"。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Device")
+	static FString GetSupportedABIs();
+
+	// ---------------- 应用信息（补充） ----------------
+
+	// 首次安装时间（毫秒时间戳）。非 Android 平台返回 -1。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|App")
+	static int64 GetFirstInstallTimeMs();
+
+	// 最后更新时间（毫秒时间戳）。非 Android 平台返回 -1。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|App")
+	static int64 GetLastUpdateTimeMs();
+
+	// 应用显示名（桌面图标下面那个名字）。非 Android 平台返回空串。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|App")
+	static FString GetAppLabel();
+
+	// 拉起指定包名的 App。受 Android 11 包可见性限制：没在清单 <queries> 里声明的包会返回 false。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|App")
+	static bool StartApp(const FString& PackageName);
+
+	// ---------------- 音频（补充） ----------------
+
+	// 媒体音量最大档位，通常是 15。拿不到返回 0。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Audio")
+	static int32 GetMaxVolume();
+
+	// 设置媒体音量档位。返回 false 表示平台不支持或失败。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Audio")
+	static bool SetVolume(int32 Level);
+
+	// ---------------- 显示（补充） ----------------
+
+	// 系统亮度（平台自己的刻度，通常是 0~255）。读取不需要权限，写入需要 WRITE_SETTINGS，所以没有 setter。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Display")
+	static int32 GetSystemBrightness();
+
+	// 系统是否处于深色模式。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Display")
+	static bool IsNightMode();
+
 	// ---------------- 振动 ----------------
 
 	// 触发一次振动。Strength：0 轻 / 1 中 / 2 重，越界按中处理。

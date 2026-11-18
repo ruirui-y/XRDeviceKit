@@ -96,6 +96,17 @@ float CallFloat(const ANSICHAR* Name)
 	return Method ? static_cast<float>(Env->CallStaticFloatMethod(GXRBridgeClass, Method)) : 0.0f;
 }
 
+bool CallBool(const ANSICHAR* Name)
+{
+	JNIEnv* Env = FAndroidApplication::GetJavaEnv();
+	if (Env == nullptr)
+	{
+		return false;
+	}
+	jmethodID Method = FindBridgeMethod(Env, Name, "()Z");
+	return Method != nullptr && Env->CallStaticBooleanMethod(GXRBridgeClass, Method) == JNI_TRUE;
+}
+
 FString CallString(const ANSICHAR* Name)
 {
 	JNIEnv* Env = FAndroidApplication::GetJavaEnv();
@@ -130,6 +141,21 @@ bool CallBoolWithString(const ANSICHAR* Name, const FString& Argument)
 	const jboolean Result = Env->CallStaticBooleanMethod(GXRBridgeClass, Method, JavaArgument);
 	Env->DeleteLocalRef(JavaArgument);
 	return Result == JNI_TRUE;
+}
+
+bool CallBoolWithInt(const ANSICHAR* Name, int32 Value)
+{
+	JNIEnv* Env = FAndroidApplication::GetJavaEnv();
+	if (Env == nullptr)
+	{
+		return false;
+	}
+	jmethodID Method = FindBridgeMethod(Env, Name, "(I)Z");
+	if (Method == nullptr)
+	{
+		return false;
+	}
+	return Env->CallStaticBooleanMethod(GXRBridgeClass, Method, static_cast<jint>(Value)) == JNI_TRUE;
 }
 } // namespace
 #endif
@@ -283,5 +309,121 @@ FString XRDeviceKit::Java::GetLanguageTag()
 	return CallString("GetLanguageTag");
 #else
 	return FString();
+#endif
+}
+
+// ==================== 设备构建信息 ====================
+
+FString XRDeviceKit::Java::GetManufacturer()
+{
+#if PLATFORM_ANDROID
+	return CallString("GetManufacturer");
+#else
+	return FString();
+#endif
+}
+
+FString XRDeviceKit::Java::GetModel()
+{
+#if PLATFORM_ANDROID
+	return CallString("GetModel");
+#else
+	return FString();
+#endif
+}
+
+FString XRDeviceKit::Java::GetDeviceName()
+{
+#if PLATFORM_ANDROID
+	return CallString("GetDeviceName");
+#else
+	return FString();
+#endif
+}
+
+FString XRDeviceKit::Java::GetSupportedABIs()
+{
+#if PLATFORM_ANDROID
+	return CallString("GetSupportedABIs");
+#else
+	return FString();
+#endif
+}
+
+// ==================== 应用信息（补充） ====================
+
+int64 XRDeviceKit::Java::GetFirstInstallTimeMs()
+{
+#if PLATFORM_ANDROID
+	return CallLong("GetFirstInstallTimeMs");
+#else
+	return -1;
+#endif
+}
+
+int64 XRDeviceKit::Java::GetLastUpdateTimeMs()
+{
+#if PLATFORM_ANDROID
+	return CallLong("GetLastUpdateTimeMs");
+#else
+	return -1;
+#endif
+}
+
+FString XRDeviceKit::Java::GetAppLabel()
+{
+#if PLATFORM_ANDROID
+	return CallString("GetAppLabel");
+#else
+	return FString();
+#endif
+}
+
+bool XRDeviceKit::Java::StartApp(const FString& PackageName)
+{
+#if PLATFORM_ANDROID
+	return CallBoolWithString("StartApp", PackageName);
+#else
+	return false;
+#endif
+}
+
+// ==================== 音频（补充） ====================
+
+int32 XRDeviceKit::Java::GetMaxVolume()
+{
+#if PLATFORM_ANDROID
+	return CallInt("GetMaxVolume");
+#else
+	return 0;
+#endif
+}
+
+bool XRDeviceKit::Java::SetVolume(int32 Level)
+{
+#if PLATFORM_ANDROID
+	return CallBoolWithInt("SetVolume", Level);
+#else
+	return false;
+#endif
+}
+
+// ==================== 显示（补充） ====================
+
+int32 XRDeviceKit::Java::GetSystemBrightness()
+{
+#if PLATFORM_ANDROID
+	return CallInt("GetSystemBrightness");
+#else
+	return -1;
+#endif
+}
+
+bool XRDeviceKit::Java::IsNightMode()
+{
+#if PLATFORM_ANDROID
+	return CallBool("IsNightMode");
+#else
+	return false;
 #endif
 }

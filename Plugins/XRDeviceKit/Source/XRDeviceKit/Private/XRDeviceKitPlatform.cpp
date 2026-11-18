@@ -395,6 +395,122 @@ FString XRDeviceKit::Platform::GetLanguageTag()
 #endif
 }
 
+// ==================== 设备构建信息 ====================
+
+FString XRDeviceKit::Platform::GetManufacturer()
+{
+#if PLATFORM_ANDROID
+	return XRDeviceKit::Java::GetManufacturer();
+#else
+	return FString();
+#endif
+}
+
+FString XRDeviceKit::Platform::GetModel()
+{
+#if PLATFORM_ANDROID
+	return XRDeviceKit::Java::GetModel();
+#else
+	return FString();
+#endif
+}
+
+FString XRDeviceKit::Platform::GetDeviceName()
+{
+#if PLATFORM_ANDROID
+	return XRDeviceKit::Java::GetDeviceName();
+#else
+	return FString();
+#endif
+}
+
+FString XRDeviceKit::Platform::GetSupportedABIs()
+{
+#if PLATFORM_ANDROID
+	return XRDeviceKit::Java::GetSupportedABIs();
+#else
+	return FString();
+#endif
+}
+
+// ==================== 应用信息（补充） ====================
+
+int64 XRDeviceKit::Platform::GetFirstInstallTimeMs()
+{
+#if PLATFORM_ANDROID
+	return XRDeviceKit::Java::GetFirstInstallTimeMs();
+#else
+	return -1;
+#endif
+}
+
+int64 XRDeviceKit::Platform::GetLastUpdateTimeMs()
+{
+#if PLATFORM_ANDROID
+	return XRDeviceKit::Java::GetLastUpdateTimeMs();
+#else
+	return -1;
+#endif
+}
+
+FString XRDeviceKit::Platform::GetAppLabel()
+{
+#if PLATFORM_ANDROID
+	return XRDeviceKit::Java::GetAppLabel();
+#else
+	return FString();
+#endif
+}
+
+bool XRDeviceKit::Platform::StartApp(const FString& PackageName)
+{
+#if PLATFORM_ANDROID
+	return XRDeviceKit::Java::StartApp(PackageName);
+#else
+	return false;
+#endif
+}
+
+// ==================== 音频（补充） ====================
+
+int32 XRDeviceKit::Platform::GetMaxVolume()
+{
+#if PLATFORM_ANDROID
+	return XRDeviceKit::Java::GetMaxVolume();
+#else
+	return 0;
+#endif
+}
+
+bool XRDeviceKit::Platform::SetVolume(int32 Level)
+{
+#if PLATFORM_ANDROID
+	return XRDeviceKit::Java::SetVolume(Level);
+#else
+	return false;
+#endif
+}
+
+// ==================== 显示（补充） ====================
+
+int32 XRDeviceKit::Platform::GetSystemBrightness()
+{
+#if PLATFORM_ANDROID
+	return XRDeviceKit::Java::GetSystemBrightness();
+#else
+	return -1;
+#endif
+}
+
+bool XRDeviceKit::Platform::IsNightMode()
+{
+#if PLATFORM_ANDROID
+	return XRDeviceKit::Java::IsNightMode();
+#else
+	return false;
+#endif
+}
+
 FString XRDeviceKit::Platform::GetPackageName()
 {
 #if PLATFORM_ANDROID
