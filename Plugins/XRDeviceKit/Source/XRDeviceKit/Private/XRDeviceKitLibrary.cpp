@@ -296,6 +296,38 @@ bool UXRDeviceKitLibrary::IsNightMode()
 	return XRDeviceKit::Platform::IsNightMode();
 }
 
+// ==================== 零权限查询（补充） ====================
+
+FString UXRDeviceKitLibrary::GetIpAddress()
+{
+	return XRDeviceKit::Platform::GetIpAddress();
+}
+
+int32 UXRDeviceKitLibrary::GetScreenOffTimeout()
+{
+	return XRDeviceKit::Platform::GetScreenOffTimeout();
+}
+
+FString UXRDeviceKitLibrary::GetLanguageList()
+{
+	return XRDeviceKit::Platform::GetLanguageList();
+}
+
+int32 UXRDeviceKitLibrary::GetRingerMode()
+{
+	return XRDeviceKit::Platform::GetRingerMode();
+}
+
+int32 UXRDeviceKitLibrary::GetBatteryCurrentNow()
+{
+	return XRDeviceKit::Platform::GetBatteryCurrentNow();
+}
+
+int32 UXRDeviceKitLibrary::GetBatteryHealth()
+{
+	return XRDeviceKit::Platform::GetBatteryHealth();
+}
+
 // ==================== 性能 ====================
 
 float UXRDeviceKitLibrary::GetRenderFPS()

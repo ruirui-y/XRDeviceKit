@@ -255,6 +255,32 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Display")
 	static bool IsNightMode();
 
+	// ---------------- 零权限查询（补充） ----------------
+
+	// 本机 IPv4 地址，例如 "192.168.1.23"。不是 WiFi 名称（拿 SSID 要权限）。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Network")
+	static FString GetIpAddress();
+
+	// 息屏超时（毫秒），例如 30000。拿不到返回 -1。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Display")
+	static int32 GetScreenOffTimeout();
+
+	// 首选语言列表，逗号分隔，例如 "zh-CN,en-US"。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|System")
+	static FString GetLanguageList();
+
+	// 铃声模式：0 静音 / 1 振动 / 2 正常。拿不到返回 -1。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Audio")
+	static int32 GetRingerMode();
+
+	// 电池瞬时电流（毫安）。符号由厂商决定：P1Max 上充电时是负数（实测 -903），判断充放电请用 IsCharging。设备不支持返回 -1。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Device")
+	static int32 GetBatteryCurrentNow();
+
+	// 电池健康，按平台常量：1 未知 / 2 良好 / 3 过热 / 4 损坏 / 5 过压 / 6 故障 / 7 过冷。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Device")
+	static int32 GetBatteryHealth();
+
 	// ---------------- 性能 ----------------
 
 	// 引擎平滑后的渲染帧率（和 stat fps 显示的一致）。刚启动没统计出来时返回 0。

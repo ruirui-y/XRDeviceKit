@@ -28,7 +28,7 @@ Win64（编辑器）下所有平台相关节点返回默认值，**不会崩**�
 
 ---
 
-## 三、设备（17 个）
+## 三、设备（19 个）
 
 | 节点 | 说明 | 返回 | P1Max 实测 |
 |---|---|---|---|
@@ -49,8 +49,10 @@ Win64（编辑器）下所有平台相关节点返回默认值，**不会崩**�
 | `GetModel` | 型号 | FString | P1Max |
 | `GetDeviceName` | 设备代号 | FString | P1Max |
 | `GetSupportedABIs` | 支持的 ABI，逗号分隔 | FString | arm64-v8a,armeabi-v7a,armeabi |
+| `GetBatteryCurrentNow` | 电池瞬时电流（毫安），**符号随厂商**：P1Max 充电时为负 | int32，-1 不支持 | -903 |
+| `GetBatteryHealth` | 电池健康，1 未知 / 2 良好 / 3 过热 / 4 损坏 / 5 过压 / 6 故障 / 7 过冷 | int32 | 2（良好） |
 
-## 四、屏幕（12 个）
+## 四、屏幕（13 个）
 
 | 节点 | 说明 | 返回 | P1Max 实测 |
 |---|---|---|---|
@@ -66,25 +68,28 @@ Win64（编辑器）下所有平台相关节点返回默认值，**不会崩**�
 | `GetScreenRefreshRate` | **设备支持的最高刷新率** Hz | float | 90.0 |
 | `GetSystemBrightness` | 系统亮度（平台刻度 0~255），**只读** | int32 | 204 |
 | `IsNightMode` | 是否深色模式 | bool | false |
+| `GetScreenOffTimeout` | 息屏超时（毫秒） | int32，-1 未知 | 60000 |
 
 > `EXRDeviceScreenOrientation`：`Unknown` / `Portrait` / `PortraitUpsideDown` / `LandscapeLeft` / `LandscapeRight`
 
-## 五、网络（2 个）
+## 五、网络（3 个）
 
 | 节点 | 说明 | 返回 | P1Max 实测 |
 |---|---|---|---|
 | `GetNetworkType` | 当前网络类型枚举 | `EXRDeviceNetworkType` | 4（WiFi） |
 | `HasWiFiConnection` | 是否连着 WiFi | bool | true |
+| `GetIpAddress` | 本机 IPv4（不是 WiFi 名称，SSID 要权限） | FString | 192.168.31.31 |
 
 > `EXRDeviceNetworkType`：`Unknown` / `None` / `AirplaneMode` / `Cellular` / `WiFi` / `WiMax`
 
-## 六、音频（3 个）
+## 六、音频（4 个）
 
 | 节点 | 说明 | 返回 | P1Max 实测 |
 |---|---|---|---|
 | `GetDeviceVolume` | 媒体音量百分比 0~100 | int32 | 26 |
 | `SetVolume(Percent)` | 设置媒体音量，入参 0~100，内部换算成设备档位 | bool | — |
 | `IsHeadphonesPluggedIn` | 是否插着耳机 | bool | false |
+| `GetRingerMode` | 铃声模式：0 静音 / 1 振动 / 2 正常 | int32，-1 未知 | 2 |
 
 ## 七、存储（4 个）
 
@@ -110,13 +115,14 @@ Win64（编辑器）下所有平台相关节点返回默认值，**不会崩**�
 | `IsAppInstalled(PackageName)` | 指定包是否安装（**受 Android 11 包可见性限制**） | bool | — |
 | `StartApp(PackageName)` | 拉起指定包（**同样受包可见性限制**） | bool | — |
 
-## 九、系统（7 个）
+## 九、系统（8 个）
 
 | 节点 | 说明 | 返回 | P1Max 实测 |
 |---|---|---|---|
 | `GetUptimeSeconds` | 开机时长（秒），含深睡眠 | int64 | — |
 | `GetTimeZoneId` | 时区 ID | FString | America/Los_Angeles |
 | `GetLanguageTag` | 语言标签 | FString | zh-CN |
+| `GetLanguageList` | 语言列表，逗号分隔 | FString | zh-CN |
 | `GetProjectVersion` | 工程版本（Project Settings → Project → Version） | FString | 1.0.0.0 |
 | `CopyToClipboard(Text)` | 写系统剪贴板 | — | — |
 | `PasteFromClipboard` | 读系统剪贴板 | FString | 往返一致 |
@@ -157,7 +163,7 @@ Win64（编辑器）下所有平台相关节点返回默认值，**不会崩**�
 插件自带两层测试：
 
 ```powershell
-# 1. 契约测试（编辑器，10 秒）：57 个节点的默认值与数量
+# 1. 契约测试（编辑器，10 秒）：63 个节点的默认值与数量
 UnrealEditor-Cmd.exe <工程>.uproject -ExecCmds="Automation RunTests XRDeviceKit;Quit" -unattended -nop4 -nullrhi -log
 
 # 2. 真机冒烟：装包后自动跑，日志每行一个值

@@ -28,7 +28,7 @@ bool FXRDeviceKitContractTest::RunTest(const FString& Parameters)
 			++CallableCount;
 		}
 	}
-	TestTrue(FString::Printf(TEXT("蓝图节点数量应该 >= 57，实际 %d"), CallableCount), CallableCount >= 57);
+	TestTrue(FString::Printf(TEXT("蓝图节点数量应该 >= 63，实际 %d"), CallableCount), CallableCount >= 63);
 
 	// ---- 设备 / 电源 ----
 	TestEqual(TEXT("电量在非 Android 平台返回 -1"), L::GetBatteryLevel(), -1);
@@ -100,6 +100,14 @@ bool FXRDeviceKitContractTest::RunTest(const FString& Parameters)
 	const FString ClipboardProbe = TEXT("XRDeviceKitContractProbe");
 	L::CopyToClipboard(ClipboardProbe);
 	TestEqual(TEXT("剪贴板往返一致"), L::PasteFromClipboard(), ClipboardProbe);
+
+	// ---- 零权限查询（补充） ----
+	TestTrue(TEXT("IP 非 Android 为空"), L::GetIpAddress().IsEmpty());
+	TestEqual(TEXT("息屏超时 -1"), L::GetScreenOffTimeout(), -1);
+	TestTrue(TEXT("语言列表非 Android 为空"), L::GetLanguageList().IsEmpty());
+	TestEqual(TEXT("铃声模式 -1"), L::GetRingerMode(), -1);
+	TestEqual(TEXT("电池电流 -1"), L::GetBatteryCurrentNow(), -1);
+	TestEqual(TEXT("电池健康 -1"), L::GetBatteryHealth(), -1);
 
 	// ---- 性能 ----
 	TestTrue(TEXT("渲染帧率 >= 0"), L::GetRenderFPS() >= 0.0f);

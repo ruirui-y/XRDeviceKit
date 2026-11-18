@@ -471,6 +471,140 @@ public final class XRBridge
     }
 
     // ------------------------------------------------------------------
+    // Extra zero-permission queries
+    // ------------------------------------------------------------------
+
+    // First non-loopback IPv4 address of an active interface, e.g. "192.168.1.23".
+    // Reading interfaces needs no permission; SSID does, so this is not the WiFi name.
+    public static String GetIpAddress()
+    {
+        try
+        {
+            java.util.Enumeration<java.net.NetworkInterface> interfaces =
+                java.net.NetworkInterface.getNetworkInterfaces();
+            while (interfaces != null && interfaces.hasMoreElements())
+            {
+                java.net.NetworkInterface nif = interfaces.nextElement();
+                if (nif == null || !nif.isUp() || nif.isLoopback())
+                {
+                    continue;
+                }
+                java.util.Enumeration<java.net.InetAddress> addresses = nif.getInetAddresses();
+                while (addresses.hasMoreElements())
+                {
+                    java.net.InetAddress address = addresses.nextElement();
+                    if (address != null
+                        && !address.isLoopbackAddress()
+                        && address instanceof java.net.Inet4Address)
+                    {
+                        return address.getHostAddress();
+                    }
+                }
+            }
+            return "";
+        }
+        catch (Throwable t)
+        {
+            return "";
+        }
+    }
+
+    // Screen off timeout in milliseconds, -1 when unknown.
+    public static int GetScreenOffTimeout()
+    {
+        try
+        {
+            return android.provider.Settings.System.getInt(
+                sContext.getContentResolver(),
+                android.provider.Settings.System.SCREEN_OFF_TIMEOUT,
+                -1);
+        }
+        catch (Throwable t)
+        {
+            return -1;
+        }
+    }
+
+    // Preferred language list, e.g. "zh-CN,en-US". Falls back to a single tag before API 24.
+    public static String GetLanguageList()
+    {
+        try
+        {
+            if (android.os.Build.VERSION.SDK_INT >= 24)
+            {
+                return android.os.LocaleList.getDefault().toLanguageTags();
+            }
+            return Locale.getDefault().toLanguageTag();
+        }
+        catch (Throwable t)
+        {
+            return "";
+        }
+    }
+
+    // Ringer mode: 0 silent, 1 vibrate, 2 normal, -1 unknown (AudioManager.RINGER_MODE_*).
+    public static int GetRingerMode()
+    {
+        try
+        {
+            android.media.AudioManager am =
+                (android.media.AudioManager) sContext.getSystemService(Context.AUDIO_SERVICE);
+            return am == null ? -1 : am.getRingerMode();
+        }
+        catch (Throwable t)
+        {
+            return -1;
+        }
+    }
+
+    // Instant battery current in milliamps. The sign is vendor specific: on the P1Max it is
+    // NEGATIVE while charging. Use IsCharging to tell charge from discharge.
+    public static int GetBatteryCurrentNow()
+    {
+        try
+        {
+            android.os.BatteryManager bm =
+                (android.os.BatteryManager) sContext.getSystemService(Context.BATTERY_SERVICE);
+            if (bm == null)
+            {
+                return -1;
+            }
+            int microAmps = bm.getIntProperty(android.os.BatteryManager.BATTERY_PROPERTY_CURRENT_NOW);
+            // unsupported devices return Integer.MIN_VALUE
+            if (microAmps == Integer.MIN_VALUE)
+            {
+                return -1;
+            }
+            return microAmps / 1000;
+        }
+        catch (Throwable t)
+        {
+            return -1;
+        }
+    }
+
+    // Battery health, using the platform constants:
+    // 1 unknown / 2 good / 3 overheat / 4 dead / 5 over voltage / 6 failure / 7 cold
+    public static int GetBatteryHealth()
+    {
+        try
+        {
+            android.content.IntentFilter filter =
+                new android.content.IntentFilter(android.content.Intent.ACTION_BATTERY_CHANGED);
+            android.content.Intent status = sContext.registerReceiver(null, filter);
+            if (status == null)
+            {
+                return -1;
+            }
+            return status.getIntExtra(android.os.BatteryManager.EXTRA_HEALTH, -1);
+        }
+        catch (Throwable t)
+        {
+            return -1;
+        }
+    }
+
+    // ------------------------------------------------------------------
     // internal helpers
     // ------------------------------------------------------------------
 

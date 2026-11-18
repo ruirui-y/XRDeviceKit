@@ -112,6 +112,14 @@ void UXRDeviceKitSmokeTestSubsystem::RunSmokeTest()
 	L::CopyToClipboard(TEXT("XRDeviceKitSmoke"));
 	SMOKE_S("PasteFromClipboard", L::PasteFromClipboard());
 
+	// ---- 零权限查询（补充） ----
+	SMOKE_S("GetIpAddress", L::GetIpAddress());
+	SMOKE_I("GetScreenOffTimeout", L::GetScreenOffTimeout());
+	SMOKE_S("GetLanguageList", L::GetLanguageList());
+	SMOKE_I("GetRingerMode", L::GetRingerMode());
+	SMOKE_I("GetBatteryCurrentNow", L::GetBatteryCurrentNow());
+	SMOKE_I("GetBatteryHealth", L::GetBatteryHealth());
+
 	// ---- 性能 ----
 	SMOKE_F("GetRenderFPS", L::GetRenderFPS());
 	SMOKE_F("GetFrameTimeMs", L::GetFrameTimeMs());

@@ -418,3 +418,59 @@ bool XRDeviceKit::Java::IsNightMode()
 	return false;
 #endif
 }
+
+// ==================== 零权限查询（补充） ====================
+
+FString XRDeviceKit::Java::GetIpAddress()
+{
+#if PLATFORM_ANDROID
+	return CallString("GetIpAddress");
+#else
+	return FString();
+#endif
+}
+
+int32 XRDeviceKit::Java::GetScreenOffTimeout()
+{
+#if PLATFORM_ANDROID
+	return CallInt("GetScreenOffTimeout");
+#else
+	return -1;
+#endif
+}
+
+FString XRDeviceKit::Java::GetLanguageList()
+{
+#if PLATFORM_ANDROID
+	return CallString("GetLanguageList");
+#else
+	return FString();
+#endif
+}
+
+int32 XRDeviceKit::Java::GetRingerMode()
+{
+#if PLATFORM_ANDROID
+	return CallInt("GetRingerMode");
+#else
+	return -1;
+#endif
+}
+
+int32 XRDeviceKit::Java::GetBatteryCurrentNow()
+{
+#if PLATFORM_ANDROID
+	return CallInt("GetBatteryCurrentNow");
+#else
+	return -1;
+#endif
+}
+
+int32 XRDeviceKit::Java::GetBatteryHealth()
+{
+#if PLATFORM_ANDROID
+	return CallInt("GetBatteryHealth");
+#else
+	return -1;
+#endif
+}

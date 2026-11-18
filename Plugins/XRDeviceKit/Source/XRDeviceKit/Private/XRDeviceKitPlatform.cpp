@@ -505,6 +505,62 @@ bool XRDeviceKit::Platform::IsNightMode()
 #endif
 }
 
+// ==================== 零权限查询（补充） ====================
+
+FString XRDeviceKit::Platform::GetIpAddress()
+{
+#if PLATFORM_ANDROID
+	return XRDeviceKit::Java::GetIpAddress();
+#else
+	return FString();
+#endif
+}
+
+int32 XRDeviceKit::Platform::GetScreenOffTimeout()
+{
+#if PLATFORM_ANDROID
+	return XRDeviceKit::Java::GetScreenOffTimeout();
+#else
+	return -1;
+#endif
+}
+
+FString XRDeviceKit::Platform::GetLanguageList()
+{
+#if PLATFORM_ANDROID
+	return XRDeviceKit::Java::GetLanguageList();
+#else
+	return FString();
+#endif
+}
+
+int32 XRDeviceKit::Platform::GetRingerMode()
+{
+#if PLATFORM_ANDROID
+	return XRDeviceKit::Java::GetRingerMode();
+#else
+	return -1;
+#endif
+}
+
+int32 XRDeviceKit::Platform::GetBatteryCurrentNow()
+{
+#if PLATFORM_ANDROID
+	return XRDeviceKit::Java::GetBatteryCurrentNow();
+#else
+	return -1;
+#endif
+}
+
+int32 XRDeviceKit::Platform::GetBatteryHealth()
+{
+#if PLATFORM_ANDROID
+	return XRDeviceKit::Java::GetBatteryHealth();
+#else
+	return -1;
+#endif
+}
+
 // ==================== 性能 ====================
 
 float XRDeviceKit::Platform::GetRenderFPS()

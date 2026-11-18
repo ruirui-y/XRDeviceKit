@@ -52,5 +52,12 @@ bool SetVolume(int32 Percent);                                                  
 // ---------- 显示（补充） ----------
 int32 GetSystemBrightness();                                                        // 系统亮度（0~255），失败 -1
 bool IsNightMode();                                                                 // 是否深色模式
+// ---------- 零权限查询（补充） ----------
+FString GetIpAddress();                                                             // 本机 IPv4，失败空串
+int32 GetScreenOffTimeout();                                                        // 息屏超时（毫秒），失败 -1
+FString GetLanguageList();                                                          // 语言列表，逗号分隔
+int32 GetRingerMode();                                                              // 0 静音 / 1 振动 / 2 正常，-1 未知
+int32 GetBatteryCurrentNow();                                                       // 电池电流（毫安），符号看厂商，-1 不支持
+int32 GetBatteryHealth();                                                           // 电池健康，-1 未知
 }
 }
