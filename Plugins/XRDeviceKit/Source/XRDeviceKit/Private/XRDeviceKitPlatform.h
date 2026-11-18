@@ -41,8 +41,29 @@ bool HasWiFiConnection();                                                       
 int32 GetDeviceVolume();                                                            // 音量档位 0~15
 bool IsHeadphonesPluggedIn();                                                       // 是否插着耳机
 
+// ---------- 应用信息 ----------
+FString GetVersionName();                                                           // 版本名，失败空串
+int64 GetVersionCode();                                                             // 版本号，失败 -1
+bool IsAppInstalled(const FString& PackageName);                                    // 是否装了某包
+
+// ---------- 屏幕尺寸 ----------
+int32 GetScreenWidth();                                                             // 屏幕宽（像素）
+int32 GetScreenHeight();                                                            // 屏幕高（像素）
+int32 GetScreenDpi();                                                               // 屏幕密度 dpi
+float GetScreenDensity();                                                           // 密度倍率
+float GetScreenRefreshRate();                                                       // 刷新率 Hz
+
+// ---------- 存储 ----------
+int64 GetInternalFreeMegabytes();                                                   // 内部存储剩余 MB
+int64 GetInternalTotalMegabytes();                                                  // 内部存储总量 MB
+int64 GetExternalFreeMegabytes();                                                   // 外部存储剩余 MB
+int64 GetExternalTotalMegabytes();                                                  // 外部存储总量 MB
+
 // ---------- 系统 ----------
 FString GetPackageName();                                                           // 运行中的包名
+int64 GetUptimeSeconds();                                                           // 开机时长（秒）
+FString GetTimeZoneId();                                                            // 时区 ID
+FString GetLanguageTag();                                                           // 语言标签
 void CopyToClipboard(const FString& Text);                                          // 写剪贴板
 FString PasteFromClipboard();                                                       // 读剪贴板
 FString GetProjectVersion();                                                        // 工程版本号

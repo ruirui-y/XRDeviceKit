@@ -252,7 +252,148 @@ bool XRDeviceKit::Platform::IsHeadphonesPluggedIn()
 #endif
 }
 
+// ==================== 应用信息 ====================
+
+FString XRDeviceKit::Platform::GetVersionName()
+{
+#if PLATFORM_ANDROID
+	return XRDeviceKit::Java::GetVersionName();
+#else
+	return FString();
+#endif
+}
+
+int64 XRDeviceKit::Platform::GetVersionCode()
+{
+#if PLATFORM_ANDROID
+	return XRDeviceKit::Java::GetVersionCode();
+#else
+	return -1;
+#endif
+}
+
+bool XRDeviceKit::Platform::IsAppInstalled(const FString& PackageName)
+{
+#if PLATFORM_ANDROID
+	return XRDeviceKit::Java::IsAppInstalled(PackageName);
+#else
+	return false;
+#endif
+}
+
+// ==================== 屏幕尺寸 ====================
+
+int32 XRDeviceKit::Platform::GetScreenWidth()
+{
+#if PLATFORM_ANDROID
+	return XRDeviceKit::Java::GetScreenWidth();
+#else
+	return 0;
+#endif
+}
+
+int32 XRDeviceKit::Platform::GetScreenHeight()
+{
+#if PLATFORM_ANDROID
+	return XRDeviceKit::Java::GetScreenHeight();
+#else
+	return 0;
+#endif
+}
+
+int32 XRDeviceKit::Platform::GetScreenDpi()
+{
+#if PLATFORM_ANDROID
+	return XRDeviceKit::Java::GetScreenDpi();
+#else
+	return 0;
+#endif
+}
+
+float XRDeviceKit::Platform::GetScreenDensity()
+{
+#if PLATFORM_ANDROID
+	return XRDeviceKit::Java::GetScreenDensity();
+#else
+	return 1.0f;
+#endif
+}
+
+float XRDeviceKit::Platform::GetScreenRefreshRate()
+{
+#if PLATFORM_ANDROID
+	return XRDeviceKit::Java::GetScreenRefreshRate();
+#else
+	return 0.0f;
+#endif
+}
+
+// ==================== 存储 ====================
+
+int64 XRDeviceKit::Platform::GetInternalFreeMegabytes()
+{
+#if PLATFORM_ANDROID
+	return XRDeviceKit::Java::GetInternalFreeMegabytes();
+#else
+	return -1;
+#endif
+}
+
+int64 XRDeviceKit::Platform::GetInternalTotalMegabytes()
+{
+#if PLATFORM_ANDROID
+	return XRDeviceKit::Java::GetInternalTotalMegabytes();
+#else
+	return -1;
+#endif
+}
+
+int64 XRDeviceKit::Platform::GetExternalFreeMegabytes()
+{
+#if PLATFORM_ANDROID
+	return XRDeviceKit::Java::GetExternalFreeMegabytes();
+#else
+	return -1;
+#endif
+}
+
+int64 XRDeviceKit::Platform::GetExternalTotalMegabytes()
+{
+#if PLATFORM_ANDROID
+	return XRDeviceKit::Java::GetExternalTotalMegabytes();
+#else
+	return -1;
+#endif
+}
+
 // ==================== 系统 ====================
+
+int64 XRDeviceKit::Platform::GetUptimeSeconds()
+{
+#if PLATFORM_ANDROID
+	return XRDeviceKit::Java::GetUptimeSeconds();
+#else
+	return -1;
+#endif
+}
+
+FString XRDeviceKit::Platform::GetTimeZoneId()
+{
+#if PLATFORM_ANDROID
+	return XRDeviceKit::Java::GetTimeZoneId();
+#else
+	return FString();
+#endif
+}
+
+FString XRDeviceKit::Platform::GetLanguageTag()
+{
+#if PLATFORM_ANDROID
+	return XRDeviceKit::Java::GetLanguageTag();
+#else
+	return FString();
+#endif
+}
 
 FString XRDeviceKit::Platform::GetPackageName()
 {

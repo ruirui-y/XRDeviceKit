@@ -115,11 +115,77 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Audio")
 	static bool IsHeadphonesPluggedIn();
 
+	// ---------------- 应用信息 ----------------
+
+	// 版本名，例如 "1.0"。非 Android 平台返回空串。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|App")
+	static FString GetVersionName();
+
+	// 版本号（构建号）。非 Android 平台返回 -1。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|App")
+	static int64 GetVersionCode();
+
+	// 指定包名是否已安装。Android 11+ 受包可见性限制：没在清单 <queries> 里声明的包会返回 false。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|App")
+	static bool IsAppInstalled(const FString& PackageName);
+
+	// ---------------- 屏幕尺寸 ----------------
+
+	// 屏幕宽度（像素）。非 Android 平台返回 0。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Display")
+	static int32 GetScreenWidth();
+
+	// 屏幕高度（像素）。非 Android 平台返回 0。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Display")
+	static int32 GetScreenHeight();
+
+	// 屏幕密度（dpi），例如 320。非 Android 平台返回 0。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Display")
+	static int32 GetScreenDpi();
+
+	// 密度倍率，相对 160dpi 的倍数，例如 2.0。非 Android 平台返回 1.0。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Display")
+	static float GetScreenDensity();
+
+	// 屏幕刷新率 Hz，例如 72 或 90。拿不到返回 0。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Display")
+	static float GetScreenRefreshRate();
+
+	// ---------------- 存储 ----------------
+
+	// 内部存储剩余空间（MB）。拿不到返回 -1。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Storage")
+	static int64 GetInternalFreeMegabytes();
+
+	// 内部存储总空间（MB）。拿不到返回 -1。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Storage")
+	static int64 GetInternalTotalMegabytes();
+
+	// 外部存储剩余空间（MB）。拿不到返回 -1。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Storage")
+	static int64 GetExternalFreeMegabytes();
+
+	// 外部存储总空间（MB）。拿不到返回 -1。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Storage")
+	static int64 GetExternalTotalMegabytes();
+
 	// ---------------- 系统 ----------------
 
 	// 运行中的包名，例如 com.YourCompany.XRDeviceKitDemo。非 Android 平台返回空串。
 	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|System")
 	static FString GetPackageName();
+
+	// 开机时长（秒），含深睡眠时间。非 Android 平台返回 -1。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|System")
+	static int64 GetUptimeSeconds();
+
+	// 时区 ID，例如 "Asia/Shanghai"。非 Android 平台返回空串。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|System")
+	static FString GetTimeZoneId();
+
+	// 语言标签，例如 "zh-CN"。非 Android 平台返回空串。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|System")
+	static FString GetLanguageTag();
 
 	// 把文本写入系统剪贴板。
 	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|System")

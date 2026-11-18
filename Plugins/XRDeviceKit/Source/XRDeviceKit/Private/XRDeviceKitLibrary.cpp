@@ -123,7 +123,88 @@ bool UXRDeviceKitLibrary::IsHeadphonesPluggedIn()
 	return XRDeviceKit::Platform::IsHeadphonesPluggedIn();
 }
 
+// ==================== 应用信息 ====================
+
+FString UXRDeviceKitLibrary::GetVersionName()
+{
+	return XRDeviceKit::Platform::GetVersionName();
+}
+
+int64 UXRDeviceKitLibrary::GetVersionCode()
+{
+	return XRDeviceKit::Platform::GetVersionCode();
+}
+
+bool UXRDeviceKitLibrary::IsAppInstalled(const FString& PackageName)
+{
+	return XRDeviceKit::Platform::IsAppInstalled(PackageName);
+}
+
+// ==================== 屏幕尺寸 ====================
+
+int32 UXRDeviceKitLibrary::GetScreenWidth()
+{
+	return XRDeviceKit::Platform::GetScreenWidth();
+}
+
+int32 UXRDeviceKitLibrary::GetScreenHeight()
+{
+	return XRDeviceKit::Platform::GetScreenHeight();
+}
+
+int32 UXRDeviceKitLibrary::GetScreenDpi()
+{
+	return XRDeviceKit::Platform::GetScreenDpi();
+}
+
+float UXRDeviceKitLibrary::GetScreenDensity()
+{
+	return XRDeviceKit::Platform::GetScreenDensity();
+}
+
+float UXRDeviceKitLibrary::GetScreenRefreshRate()
+{
+	return XRDeviceKit::Platform::GetScreenRefreshRate();
+}
+
+// ==================== 存储 ====================
+
+int64 UXRDeviceKitLibrary::GetInternalFreeMegabytes()
+{
+	return XRDeviceKit::Platform::GetInternalFreeMegabytes();
+}
+
+int64 UXRDeviceKitLibrary::GetInternalTotalMegabytes()
+{
+	return XRDeviceKit::Platform::GetInternalTotalMegabytes();
+}
+
+int64 UXRDeviceKitLibrary::GetExternalFreeMegabytes()
+{
+	return XRDeviceKit::Platform::GetExternalFreeMegabytes();
+}
+
+int64 UXRDeviceKitLibrary::GetExternalTotalMegabytes()
+{
+	return XRDeviceKit::Platform::GetExternalTotalMegabytes();
+}
+
 // ==================== 系统 ====================
+
+int64 UXRDeviceKitLibrary::GetUptimeSeconds()
+{
+	return XRDeviceKit::Platform::GetUptimeSeconds();
+}
+
+FString UXRDeviceKitLibrary::GetTimeZoneId()
+{
+	return XRDeviceKit::Platform::GetTimeZoneId();
+}
+
+FString UXRDeviceKitLibrary::GetLanguageTag()
+{
+	return XRDeviceKit::Platform::GetLanguageTag();
+}
 
 FString UXRDeviceKitLibrary::GetPackageName()
 {
