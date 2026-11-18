@@ -77,8 +77,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Display")
 	static bool IsScreenOn();
 
-	// 本 App 窗口的亮度 0~1；返回 -1 表示当前跟随系统亮度。
-	// 只影响本 App，不改整机亮度。
+	// 本 App 窗口的亮度 0~1。窗口跟随系统亮度时，返回系统亮度（实测 204/255 ≈ 0.8）。
+	// 只读；改亮度用 SetBrightness，只影响本 App。
 	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Display")
 	static float GetBrightness();
 
@@ -147,13 +147,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Display")
 	static float GetScreenDensity();
 
-	// 屏幕刷新率 Hz，例如 72 或 90。拿不到返回 0。
+	// 物理屏刷新率 Hz，例如 90。注意不是 App 所在 2D 虚拟屏的刷新率（那个常是 60/72）。
 	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Display")
 	static float GetScreenRefreshRate();
 
 	// ---------------- 存储 ----------------
 
-	// 内部存储剩余空间（MB）。拿不到返回 -1。
+	// 内部存储剩余空间（MB）。注意 /data 分区通常比标称容量小（实测 96G / 标称 128G）。
 	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Storage")
 	static int64 GetInternalFreeMegabytes();
 

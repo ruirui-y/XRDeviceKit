@@ -59,12 +59,24 @@ public boolean XRDeviceKit_IsScreenOn()
     }
 }
 
-// Window brightness of this app: 0..1, or -1 when it follows the system brightness.
+// Window brightness of this app: 0..1.
+// When the window follows the system brightness (Android reports -1), fall back to the
+// system brightness so callers always get a readable number instead of a sentinel.
 public float XRDeviceKit_GetBrightness()
 {
     try
     {
-        return getWindow().getAttributes().screenBrightness;
+        float windowBrightness = getWindow().getAttributes().screenBrightness;
+        if (windowBrightness >= 0.0f)
+        {
+            return windowBrightness;
+        }
+        int systemBrightness = android.provider.Settings.System.getInt(
+            getContentResolver(),
+            android.provider.Settings.System.SCREEN_BRIGHTNESS,
+            -1);
+        // the platform scale is 0..255
+        return systemBrightness < 0 ? -1.0f : (systemBrightness / 255.0f);
     }
     catch (Throwable t)
     {

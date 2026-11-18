@@ -149,10 +149,43 @@ public final class XRBridge
         }
     }
 
+    // Max refresh rate the device can do (the physical panel supports several modes:
+    // 90 and 72 on the P1Max). The app itself renders on a virtual 2D display, so its own
+    // active mode is not the panel capability - we take the maximum over all displays' modes.
     public static float GetScreenRefreshRate()
     {
         try
         {
+            android.hardware.display.DisplayManager dm =
+                (android.hardware.display.DisplayManager) sContext.getSystemService(Context.DISPLAY_SERVICE);
+            float best = 0.0f;
+            if (dm != null)
+            {
+                for (android.view.Display display : dm.getDisplays())
+                {
+                    if (display == null)
+                    {
+                        continue;
+                    }
+                    for (android.view.Display.Mode mode : display.getSupportedModes())
+                    {
+                        if (mode != null && mode.getRefreshRate() > best)
+                        {
+                            best = mode.getRefreshRate();
+                        }
+                    }
+                    // 诊断用：打包后 adb logcat -s XRBridge 能看到这个 App 实际能枚举到几块屏
+                    android.util.Log.i("XRBridge", "display " + display.getName()
+                        + " " + display.getWidth() + "x" + display.getHeight()
+                        + " active=" + (display.getMode() == null ? 0.0f : display.getMode().getRefreshRate()));
+                }
+            }
+            if (best > 0.0f)
+            {
+                return best;
+            }
+
+            // fallback: the display the window manager hands out
             android.view.WindowManager wm =
                 (android.view.WindowManager) sContext.getSystemService(Context.WINDOW_SERVICE);
             if (wm == null)
