@@ -1,0 +1,27 @@
+# ---- Unreal Engine 生成物：全部可再生成，不进版本库 ----
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+
+# ---- IDE 与工程文件 ----
+# sln 由右键 uproject 的 "Generate Visual Studio project files" 重新生成，所以不提交
+.vs/
+*.sln
+*.suo
+*.opensdf
+*.sdf
+*.VC.db
+*.VC.opendb
+*.user
+
+# ---- 打包产物 ----
+Pack/
+
+# ---- 系统垃圾 ----
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- 日志 ----
+*.log
