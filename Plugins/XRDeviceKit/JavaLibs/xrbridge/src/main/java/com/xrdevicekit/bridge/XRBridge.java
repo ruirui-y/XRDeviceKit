@@ -605,6 +605,145 @@ public final class XRBridge
     }
 
     // ------------------------------------------------------------------
+    // System event watchers (screen on/off, network)
+    // ------------------------------------------------------------------
+    // These are the only "Java calls C++" entry points in this module. The native
+    // methods below are implemented in XRDeviceKitEventSubsystem.cpp and the JVM
+    // binds them by name, so renaming one side without the other crashes at runtime.
+
+    public static native void OnScreenStateChanged(boolean isOn);
+
+    public static native void OnNetworkChanged(boolean isConnected);
+
+    private static android.content.BroadcastReceiver sScreenReceiver;
+    private static android.net.ConnectivityManager.NetworkCallback sNetworkCallback;
+
+    // Start listening for screen on/off. Safe to call twice.
+    public static void StartScreenWatcher()
+    {
+        try
+        {
+            if (sScreenReceiver != null || sContext == null)
+            {
+                return;
+            }
+            sScreenReceiver = new android.content.BroadcastReceiver()
+            {
+                @Override
+                public void onReceive(android.content.Context context, android.content.Intent intent)
+                {
+                    try
+                    {
+                        String action = intent == null ? null : intent.getAction();
+                        if (android.content.Intent.ACTION_SCREEN_ON.equals(action))
+                        {
+                            OnScreenStateChanged(true);
+                        }
+                        else if (android.content.Intent.ACTION_SCREEN_OFF.equals(action))
+                        {
+                            OnScreenStateChanged(false);
+                        }
+                    }
+                    catch (Throwable t)
+                    {
+                        // never let an exception escape into the system
+                    }
+                }
+            };
+            android.content.IntentFilter filter = new android.content.IntentFilter();
+            filter.addAction(android.content.Intent.ACTION_SCREEN_ON);
+            filter.addAction(android.content.Intent.ACTION_SCREEN_OFF);
+            sContext.registerReceiver(sScreenReceiver, filter);
+        }
+        catch (Throwable t)
+        {
+        }
+    }
+
+    public static void StopScreenWatcher()
+    {
+        try
+        {
+            if (sScreenReceiver != null && sContext != null)
+            {
+                sContext.unregisterReceiver(sScreenReceiver);
+            }
+        }
+        catch (Throwable t)
+        {
+        }
+        sScreenReceiver = null;
+    }
+
+    // Start listening for default network changes. Needs ACCESS_NETWORK_STATE.
+    public static void StartNetworkWatcher()
+    {
+        try
+        {
+            if (sNetworkCallback != null || sContext == null)
+            {
+                return;
+            }
+            android.net.ConnectivityManager cm =
+                (android.net.ConnectivityManager) sContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (cm == null)
+            {
+                return;
+            }
+            sNetworkCallback = new android.net.ConnectivityManager.NetworkCallback()
+            {
+                @Override
+                public void onAvailable(android.net.Network network)
+                {
+                    try
+                    {
+                        OnNetworkChanged(true);
+                    }
+                    catch (Throwable t)
+                    {
+                    }
+                }
+
+                @Override
+                public void onLost(android.net.Network network)
+                {
+                    try
+                    {
+                        OnNetworkChanged(false);
+                    }
+                    catch (Throwable t)
+                    {
+                    }
+                }
+            };
+            cm.registerDefaultNetworkCallback(sNetworkCallback);
+        }
+        catch (Throwable t)
+        {
+        }
+    }
+
+    public static void StopNetworkWatcher()
+    {
+        try
+        {
+            if (sNetworkCallback != null && sContext != null)
+            {
+                android.net.ConnectivityManager cm =
+                    (android.net.ConnectivityManager) sContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+                if (cm != null)
+                {
+                    cm.unregisterNetworkCallback(sNetworkCallback);
+                }
+            }
+        }
+        catch (Throwable t)
+        {
+        }
+        sNetworkCallback = null;
+    }
+
+    // ------------------------------------------------------------------
     // internal helpers
     // ------------------------------------------------------------------
 

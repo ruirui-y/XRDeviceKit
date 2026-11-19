@@ -143,6 +143,20 @@ bool CallBoolWithString(const ANSICHAR* Name, const FString& Argument)
 	return Result == JNI_TRUE;
 }
 
+void CallVoid(const ANSICHAR* Name)
+{
+	JNIEnv* Env = FAndroidApplication::GetJavaEnv();
+	if (Env == nullptr)
+	{
+		return;
+	}
+	jmethodID Method = FindBridgeMethod(Env, Name, "()V");
+	if (Method != nullptr)
+	{
+		Env->CallStaticVoidMethod(GXRBridgeClass, Method);
+	}
+}
+
 bool CallBoolWithInt(const ANSICHAR* Name, int32 Value)
 {
 	JNIEnv* Env = FAndroidApplication::GetJavaEnv();
@@ -416,6 +430,36 @@ bool XRDeviceKit::Java::IsNightMode()
 	return CallBool("IsNightMode");
 #else
 	return false;
+#endif
+}
+
+// ==================== 事件监听开关 ====================
+
+void XRDeviceKit::Java::StartScreenWatcher()
+{
+#if PLATFORM_ANDROID
+	CallVoid("StartScreenWatcher");
+#endif
+}
+
+void XRDeviceKit::Java::StopScreenWatcher()
+{
+#if PLATFORM_ANDROID
+	CallVoid("StopScreenWatcher");
+#endif
+}
+
+void XRDeviceKit::Java::StartNetworkWatcher()
+{
+#if PLATFORM_ANDROID
+	CallVoid("StartNetworkWatcher");
+#endif
+}
+
+void XRDeviceKit::Java::StopNetworkWatcher()
+{
+#if PLATFORM_ANDROID
+	CallVoid("StopNetworkWatcher");
 #endif
 }
 

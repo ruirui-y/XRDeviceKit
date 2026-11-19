@@ -29,6 +29,11 @@ dependencies {
 		</insert>
 	</buildGradleAdditions>
 
+	<!-- 网络监听的 ConnectivityManager 需要这个普通权限（安装即授予） -->
+	<androidManifestUpdates>
+		<addPermission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+	</androidManifestUpdates>
+
 	<gameActivityImportAdditions>
 		<insert><![CDATA[
 import android.view.WindowManager;

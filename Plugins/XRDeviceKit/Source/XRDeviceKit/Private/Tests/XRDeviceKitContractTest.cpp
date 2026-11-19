@@ -6,6 +6,7 @@
 
 #include "Misc/AutomationTest.h"
 #include "XRDeviceKitLibrary.h"
+#include "XRDeviceKitEventSubsystem.h"
 #include "XRDeviceKitTypes.h"
 #include "UObject/UnrealType.h"
 
@@ -122,6 +123,9 @@ bool FXRDeviceKitContractTest::RunTest(const FString& Parameters)
 	TestTrue(TEXT("硬件信息：屏幕宽非 Android 为 0"), Hardware.ScreenWidth == 0);
 	L::StartResourceLogging(1.0f);
 	L::StopResourceLogging();
+
+	// ---- 事件子系统：类注册了就够（自动化测试里没有 GameInstance） ----
+	TestNotNull(TEXT("事件子系统已注册"), UXRDeviceKitEventSubsystem::StaticClass());
 
 	// ---- 振动：只要不崩就算过 ----
 	L::StartHaptics(1);

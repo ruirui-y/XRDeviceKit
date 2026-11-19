@@ -180,7 +180,22 @@ Win64（编辑器）下所有平台相关节点返回默认值，**不会崩**�
 | `GetHardwareInfo` | 厂商型号、CPU、GPU、内存、屏幕、系统版本 | `FXRDeviceHardwareInfo` |
 
 **字段**：`Manufacturer` `Model` `DeviceName` `CpuBrand` `CpuCoreCount` `Abi` `GpuBrand` `GpuFamily` `GlVersion` `VulkanVersion` `TotalMemoryMB` `TotalStorageMB` `ScreenWidth` `ScreenHeight` `ScreenDpi` `RefreshRate` `AndroidVersion` `AndroidSdk` `PackageName`
-## 十四、使用注意
+## 十四、事件（2 个委托）
+
+挂在 `UXRDeviceKitEventSubsystem` 上，蓝图里 `Get Game Instance Subsystem` 之后 Bind Event。子系统初始化时自动开始监听，销毁时自动停。
+
+| 事件 | 参数 | 触发时机 |
+|---|---|---|
+| `OnScreenStateChanged` | `bool bScreenOn` | 亮屏 / 灭屏 |
+| `OnNetworkChanged` | `bool bConnected` | 默认网络连上 / 断开 |
+
+| 函数 | 说明 |
+|---|---|
+| `StartWatching` / `StopWatching` | 手动开关监听，一般不用调 |
+| `IsWatching` | 当前是否在监听 |
+
+> 网络监听需要清单里的 `ACCESS_NETWORK_STATE`（普通权限，安装即授予），插件打包时自动加。
+## 十五、使用注意
 
 | 注意点 | 说明 |
 |---|---|
@@ -192,7 +207,7 @@ Win64（编辑器）下所有平台相关节点返回默认值，**不会崩**�
 | **CPU 温度仅供参考** | 读系统热区文件，不同厂商可能拿不到（返回 -1） |
 | **全部在游戏线程调** | 节点内部走 JNI，非游戏线程调用需自行 attach，插件未做保护 |
 
-## 十五、怎么验证
+## 十六、怎么验证
 
 插件自带两层测试：
 
@@ -206,9 +221,10 @@ adb logcat -d | findstr "SMOKE|"
 
 冒烟输出格式：`SMOKE|节点名=值`，可直接和头显设置页逐项对照。
 
-## 十六、版本记录
+## 十七、版本记录
 
 | 版本 | 日期 | 变更 |
 |---|---|---|
 | 0.1.0 | 2026-11-18 | 首版：57 个节点，P1Max 实测通过；亮度、刷新率、音量刻度、工程版本按真机对照修正 |
 | 0.2.0 | 2026-11-19 | 新增资源统计（快照 + 日志打印）、硬件信息；共 67 个节点 |
+| 0.3.0 | 2026-11-19 | 新增屏幕亮灭、网络变化事件（Java→C++ 反向回调） |

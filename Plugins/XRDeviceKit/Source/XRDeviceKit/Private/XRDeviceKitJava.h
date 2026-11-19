@@ -59,5 +59,11 @@ FString GetLanguageList();                                                      
 int32 GetRingerMode();                                                              // 0 静音 / 1 振动 / 2 正常，-1 未知
 int32 GetBatteryCurrentNow();                                                       // 电池电流（毫安），符号看厂商，-1 不支持
 int32 GetBatteryHealth();                                                           // 电池健康，-1 未知
+
+// ---------- 事件监听开关 ----------
+void StartScreenWatcher();                                                          // 开始监听亮屏/灭屏
+void StopScreenWatcher();                                                           // 停止监听亮屏/灭屏
+void StartNetworkWatcher();                                                         // 开始监听网络变化
+void StopNetworkWatcher();                                                          // 停止监听网络变化
 }
 }
