@@ -6,7 +6,9 @@
 #include "XRDeviceKitJni.h"
 #include "XRDeviceKitJava.h"
 #include "HAL/PlatformApplicationMisc.h"
+#include "HAL/PlatformMemory.h"
 #include "Misc/App.h"
+#include "Misc/ConfigCacheIni.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogXRDeviceKit, Log, All);
 

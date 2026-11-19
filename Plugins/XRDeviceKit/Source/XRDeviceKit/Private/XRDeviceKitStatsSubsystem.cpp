@@ -27,8 +27,13 @@ constexpr double kJiffiesPerSecond = 100.0;
 // 所以这里用 fopen/fread 定长读，读满缓冲或遇到 EOF 就停。
 FString ReadProcFile(const TCHAR* Path)
 {
-	// fopen 在 MSVC 上会报不安全警告，引擎默认关掉了这个警告
-	FILE* File = fopen(TCHAR_TO_UTF8(Path), "r");
+	// Windows 用 fopen_s 避开 C4996 警告；其它平台（/proc 只存在于这些平台）用 fopen
+	FILE* File = nullptr;
+#if PLATFORM_WINDOWS
+	fopen_s(&File, TCHAR_TO_UTF8(Path), "r");
+#else
+	File = fopen(TCHAR_TO_UTF8(Path), "r");
+#endif
 	if (File == nullptr)
 	{
 		return FString();

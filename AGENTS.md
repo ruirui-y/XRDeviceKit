@@ -25,7 +25,7 @@ Plugins/XRDeviceKit/
 │  ├─ Public/        ← 蓝图库、对外类型；只放 UE 反射能看懂的东西
 │  ├─ Private/       ← 后端实现、JNI 封装；外部不可见
 │  └─ Android/       ← UPL XML（xx_APL.xml），只在打 Android 包时用
-└─ JavaLibs/         ← 需要独立 Java 类时放这里（目前为空）
+└─ JavaLibs/         ← 独立 Java 模块；必须在 Config/FilterPlugin.ini 里登记才会打进插件包
 ```
 
 ## 3. 架构约定（违反要回退）
