@@ -48,6 +48,10 @@ void UXRDeviceKitSmokeTestSubsystem::RunSmokeTest()
 
 	UE_LOG(LogXRDeviceKitSmoke, Display, TEXT("SMOKE|__begin=1"));
 
+	// 打开资源统计日志：之后每隔 1 秒会打一行 STATS|，装包测性能时直接抓就行
+	L::StartResourceLogging(1.0f);
+
+
 	// ---- 设备 / 电源 ----
 	SMOKE_I("GetBatteryLevel", L::GetBatteryLevel());
 	SMOKE_B("IsCharging", L::IsCharging());

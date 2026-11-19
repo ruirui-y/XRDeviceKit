@@ -100,6 +100,14 @@ int32 GetRingerMode();                                                          
 int32 GetBatteryCurrentNow();                                                       // 电池电流（毫安），-1 不支持
 int32 GetBatteryHealth();                                                           // 电池健康，-1 未知
 
+// ---------- 硬件信息 ----------
+FString GetGPUBrand();                                                              // GPU 型号
+FString GetGPUFamily();                                                             // GPU 家族
+FString GetGLVersion();                                                             // OpenGL ES 版本
+FString GetVulkanVersion();                                                         // Vulkan 版本
+int32 GetAndroidSdkInt();                                                           // 安卓 API 级别
+int64 GetTotalMemoryMB();                                                           // 整机内存 MB
+
 // ---------- 性能 ----------
 float GetRenderFPS();                                                               // 引擎平滑帧率
 float GetFrameTimeMs();                                                             // 每帧毫秒

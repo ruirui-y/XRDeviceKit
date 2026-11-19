@@ -146,7 +146,41 @@ Win64（编辑器）下所有平台相关节点返回默认值，**不会崩**�
 
 ---
 
-## 十二、使用注意
+## 十二、资源统计（3 个）
+
+采样由后台子系统每秒做一次，节点只读缓存，不阻塞。
+
+| 节点 | 说明 | 返回 |
+|---|---|---|
+| `GetResourceSnapshot` | 最近一次资源快照 | `FXRDeviceResourceSnapshot` |
+| `StartResourceLogging(IntervalSeconds)` | 开始把每次采样打进 UE 日志，前缀 `STATS|`，默认 1 秒 | — |
+| `StopResourceLogging` | 停止打印（后台采样继续） | — |
+
+**快照字段**
+
+| 字段 | 含义 | P1Max 实测 |
+|---|---|---|
+| `CpuPercent` | 本进程 CPU，相对整机 0~100 | 86.8 |
+| `SystemCpuPercent` | 整机 CPU（`/proc/stat` 被 SELinux 挡时为 0） | 0 |
+| `MemoryUsedMB` / `MemoryPeakMB` | 本进程 RSS / 峰值 | 456 / 540 |
+| `EngineMemoryUsedMB` | 引擎堆已用 | 457 |
+| `SystemAvailableMB` | 整机可用 | 3456 |
+| `ThreadCount` | 进程线程数 | 69 |
+| `FrameTimeMs` / `GameThreadMs` / `RenderThreadMs` / `RhitMs` | 帧耗时与线程耗时 | 13.8 / 0 / 0 / 0 |
+| `GpuFrameTimeMs` / `GpuUsageFraction` | GPU 帧时间与占用 | 0 / 0 |
+| `IoReadMB` / `IoWriteMB` | 进程累计 IO | 0 / 0 |
+| `BatteryCurrentMa` / `BatteryTempC` | 电池电流与温度 | -674 / 36.7 |
+
+> `GameThreadMs` 等四个字段依赖引擎 `FStatUnitData`，运行时通常不刷新，P1Max 上一直是 0。
+
+## 十三、硬件信息（1 个）
+
+| 节点 | 说明 | 返回 |
+|---|---|---|
+| `GetHardwareInfo` | 厂商型号、CPU、GPU、内存、屏幕、系统版本 | `FXRDeviceHardwareInfo` |
+
+**字段**：`Manufacturer` `Model` `DeviceName` `CpuBrand` `CpuCoreCount` `Abi` `GpuBrand` `GpuFamily` `GlVersion` `VulkanVersion` `TotalMemoryMB` `TotalStorageMB` `ScreenWidth` `ScreenHeight` `ScreenDpi` `RefreshRate` `AndroidVersion` `AndroidSdk` `PackageName`
+## 十四、使用注意
 
 | 注意点 | 说明 |
 |---|---|
@@ -158,12 +192,12 @@ Win64（编辑器）下所有平台相关节点返回默认值，**不会崩**�
 | **CPU 温度仅供参考** | 读系统热区文件，不同厂商可能拿不到（返回 -1） |
 | **全部在游戏线程调** | 节点内部走 JNI，非游戏线程调用需自行 attach，插件未做保护 |
 
-## 十三、怎么验证
+## 十五、怎么验证
 
 插件自带两层测试：
 
 ```powershell
-# 1. 契约测试（编辑器，10 秒）：63 个节点的默认值与数量
+# 1. 契约测试（编辑器，10 秒）：67 个节点的默认值与数量
 UnrealEditor-Cmd.exe <工程>.uproject -ExecCmds="Automation RunTests XRDeviceKit;Quit" -unattended -nop4 -nullrhi -log
 
 # 2. 真机冒烟：装包后自动跑，日志每行一个值
@@ -172,8 +206,9 @@ adb logcat -d | findstr "SMOKE|"
 
 冒烟输出格式：`SMOKE|节点名=值`，可直接和头显设置页逐项对照。
 
-## 十四、版本记录
+## 十六、版本记录
 
 | 版本 | 日期 | 变更 |
 |---|---|---|
 | 0.1.0 | 2026-11-18 | 首版：57 个节点，P1Max 实测通过；亮度、刷新率、音量刻度、工程版本按真机对照修正 |
+| 0.2.0 | 2026-11-19 | 新增资源统计（快照 + 日志打印）、硬件信息；共 67 个节点 |

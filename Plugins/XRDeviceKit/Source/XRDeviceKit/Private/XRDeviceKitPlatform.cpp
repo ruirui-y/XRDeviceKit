@@ -561,6 +561,59 @@ int32 XRDeviceKit::Platform::GetBatteryHealth()
 #endif
 }
 
+// ==================== 硬件信息 ====================
+
+FString XRDeviceKit::Platform::GetGPUBrand()
+{
+#if PLATFORM_ANDROID
+	return FPlatformMisc::GetPrimaryGPUBrand();
+#else
+	return FString();
+#endif
+}
+
+FString XRDeviceKit::Platform::GetGPUFamily()
+{
+#if PLATFORM_ANDROID
+	return FPlatformMisc::GetGPUFamily();
+#else
+	return FString();
+#endif
+}
+
+FString XRDeviceKit::Platform::GetGLVersion()
+{
+#if PLATFORM_ANDROID
+	return FPlatformMisc::GetGLVersion();
+#else
+	return FString();
+#endif
+}
+
+FString XRDeviceKit::Platform::GetVulkanVersion()
+{
+#if PLATFORM_ANDROID
+	return FPlatformMisc::GetVulkanVersion();
+#else
+	return FString();
+#endif
+}
+
+int32 XRDeviceKit::Platform::GetAndroidSdkInt()
+{
+#if PLATFORM_ANDROID
+	return FAndroidMisc::GetAndroidBuildVersion();
+#else
+	return -1;
+#endif
+}
+
+int64 XRDeviceKit::Platform::GetTotalMemoryMB()
+{
+	// 引擎已经读过系统内存信息，跨平台都有
+	return static_cast<int64>(FPlatformMemory::GetStats().TotalPhysical / (1024 * 1024));
+}
+
 // ==================== 性能 ====================
 
 float XRDeviceKit::Platform::GetRenderFPS()

@@ -28,7 +28,7 @@ bool FXRDeviceKitContractTest::RunTest(const FString& Parameters)
 			++CallableCount;
 		}
 	}
-	TestTrue(FString::Printf(TEXT("蓝图节点数量应该 >= 63，实际 %d"), CallableCount), CallableCount >= 63);
+	TestTrue(FString::Printf(TEXT("蓝图节点数量应该 >= 67，实际 %d"), CallableCount), CallableCount >= 67);
 
 	// ---- 设备 / 电源 ----
 	TestEqual(TEXT("电量在非 Android 平台返回 -1"), L::GetBatteryLevel(), -1);
@@ -112,6 +112,16 @@ bool FXRDeviceKitContractTest::RunTest(const FString& Parameters)
 	// ---- 性能 ----
 	TestTrue(TEXT("渲染帧率 >= 0"), L::GetRenderFPS() >= 0.0f);
 	TestTrue(TEXT("帧耗时 >= 0"), L::GetFrameTimeMs() >= 0.0f);
+
+	// ---- 资源统计 / 硬件信息 ----
+	const FXRDeviceResourceSnapshot Snapshot = L::GetResourceSnapshot();
+	TestTrue(TEXT("没有子系统时快照 CPU 为 0"), FMath::IsNearlyZero(Snapshot.CpuPercent));
+	const FXRDeviceHardwareInfo Hardware = L::GetHardwareInfo();
+	TestTrue(TEXT("硬件信息：核心数 > 0"), Hardware.CpuCoreCount > 0);
+	TestTrue(TEXT("硬件信息：内存总量 > 0"), Hardware.TotalMemoryMB > 0);
+	TestTrue(TEXT("硬件信息：屏幕宽非 Android 为 0"), Hardware.ScreenWidth == 0);
+	L::StartResourceLogging(1.0f);
+	L::StopResourceLogging();
 
 	// ---- 振动：只要不崩就算过 ----
 	L::StartHaptics(1);

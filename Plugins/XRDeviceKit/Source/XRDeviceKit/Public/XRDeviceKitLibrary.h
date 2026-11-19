@@ -7,6 +7,7 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "XRDeviceKitStatsTypes.h"
 #include "XRDeviceKitTypes.h"
 #include "XRDeviceKitLibrary.generated.h"
 
@@ -290,6 +291,27 @@ public:
 	// 每帧耗时（毫秒）= 1000 / GetRenderFPS。帧率为 0 时返回 0。
 	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Performance")
 	static float GetFrameTimeMs();
+
+	// ---------------- 资源统计 ----------------
+
+	// 最近一次资源采样：CPU 占用、内存、线程数、帧时间、GPU 时间。
+	// 采样由 StatsSubsystem 后台每 1 秒做一次，子系统还没起来时返回全 0。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Stats")
+	static FXRDeviceResourceSnapshot GetResourceSnapshot();
+
+	// 开始把每次采样打进 UE 日志，每行前缀 STATS|。IntervalSeconds <= 0 用默认 1 秒。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Stats")
+	static void StartResourceLogging(float IntervalSeconds = 1.0f);
+
+	// 停止输出日志；后台采样不受影响。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Stats")
+	static void StopResourceLogging();
+
+	// ---------------- 硬件信息 ----------------
+
+	// 设备硬件信息：厂商型号、CPU、GPU、内存、屏幕、系统版本。一次性采集，不参与每秒采样。
+	UFUNCTION(BlueprintCallable, Category = "XRDeviceKit|Hardware")
+	static FXRDeviceHardwareInfo GetHardwareInfo();
 
 	// ---------------- 振动 ----------------
 

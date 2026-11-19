@@ -2,6 +2,31 @@
 
 #include "XRDeviceKitLibrary.h"
 #include "XRDeviceKitPlatform.h"
+#include "XRDeviceKitStatsSubsystem.h"
+#include "Engine/Engine.h"
+#include "Engine/GameInstance.h"
+#include "Misc/Paths.h"
+
+namespace
+{
+// 找当前运行中的 GameInstance 上的统计子系统；编辑器工具等场景可能没有，返回 nullptr
+UXRDeviceKitStatsSubsystem* GetStatsSubsystem()
+{
+	if (GEngine == nullptr)
+	{
+		return nullptr;
+	}
+	for (const FWorldContext& Context : GEngine->GetWorldContexts())
+	{
+		const bool bIsRunningWorld = Context.WorldType == EWorldType::Game || Context.WorldType == EWorldType::PIE;
+		if (bIsRunningWorld && Context.OwningGameInstance != nullptr)
+		{
+			return Context.OwningGameInstance->GetSubsystem<UXRDeviceKitStatsSubsystem>();
+		}
+	}
+	return nullptr;
+}
+} // namespace
 
 // ==================== 设备 / 电源 ====================
 
@@ -338,6 +363,69 @@ float UXRDeviceKitLibrary::GetRenderFPS()
 float UXRDeviceKitLibrary::GetFrameTimeMs()
 {
 	return XRDeviceKit::Platform::GetFrameTimeMs();
+}
+
+// ==================== 资源统计 ====================
+
+FXRDeviceResourceSnapshot UXRDeviceKitLibrary::GetResourceSnapshot()
+{
+	if (UXRDeviceKitStatsSubsystem* Stats = GetStatsSubsystem())
+	{
+		return Stats->GetSnapshot();
+	}
+	// 没有子系统（比如编辑器里的工具蓝图）就返回全 0，不崩
+	return FXRDeviceResourceSnapshot();
+}
+
+void UXRDeviceKitLibrary::StartResourceLogging(float IntervalSeconds)
+{
+	if (UXRDeviceKitStatsSubsystem* Stats = GetStatsSubsystem())
+	{
+		Stats->StartLogging(IntervalSeconds);
+		return;
+	}
+	UE_LOG(LogTemp, Warning, TEXT("StartResourceLogging: 没有找到 StatsSubsystem，统计不会输出"));
+}
+
+void UXRDeviceKitLibrary::StopResourceLogging()
+{
+	if (UXRDeviceKitStatsSubsystem* Stats = GetStatsSubsystem())
+	{
+		Stats->StopLogging();
+	}
+}
+
+// ==================== 硬件信息 ====================
+
+FXRDeviceHardwareInfo UXRDeviceKitLibrary::GetHardwareInfo()
+{
+	FXRDeviceHardwareInfo Info;
+
+	Info.Manufacturer = XRDeviceKit::Platform::GetManufacturer();
+	Info.Model = XRDeviceKit::Platform::GetModel();
+	Info.DeviceName = XRDeviceKit::Platform::GetDeviceName();
+	Info.CpuBrand = XRDeviceKit::Platform::GetCPUBrand();
+	Info.CpuCoreCount = XRDeviceKit::Platform::GetCoreCount();
+	Info.Abi = XRDeviceKit::Platform::GetSupportedABIs();
+
+	Info.GpuBrand = XRDeviceKit::Platform::GetGPUBrand();
+	Info.GpuFamily = XRDeviceKit::Platform::GetGPUFamily();
+	Info.GlVersion = XRDeviceKit::Platform::GetGLVersion();
+	Info.VulkanVersion = XRDeviceKit::Platform::GetVulkanVersion();
+
+	Info.TotalMemoryMB = XRDeviceKit::Platform::GetTotalMemoryMB();
+	Info.TotalStorageMB = XRDeviceKit::Platform::GetDiskTotalMegabytes(FPaths::ProjectDir());
+
+	Info.ScreenWidth = XRDeviceKit::Platform::GetScreenWidth();
+	Info.ScreenHeight = XRDeviceKit::Platform::GetScreenHeight();
+	Info.ScreenDpi = XRDeviceKit::Platform::GetScreenDpi();
+	Info.RefreshRate = XRDeviceKit::Platform::GetScreenRefreshRate();
+
+	Info.AndroidVersion = XRDeviceKit::Platform::GetOSVersionString();
+	Info.AndroidSdk = XRDeviceKit::Platform::GetAndroidSdkInt();
+	Info.PackageName = XRDeviceKit::Platform::GetPackageName();
+
+	return Info;
 }
 
 // ==================== 振动 ====================
