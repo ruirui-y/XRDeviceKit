@@ -1,7 +1,12 @@
-// Appended by UAT to the module's generated build.gradle.
-// Keep this file ASCII-only: UAT concatenates it as plain text, and non-ASCII
-// bytes can get mangled on the way through, so no Chinese comments here.
-// Sources live in src/main/java/ (Android Gradle Plugin default), nothing to declare.
+// Keep this file ASCII-only: UAT concatenates it into the generated build.gradle as
+// plain text, and non-ASCII bytes get mangled on the way through.
+//
+// Force UTF-8 for this module: XRBridge.java carries Chinese comments, while javac
+// defaults to the platform encoding (GBK on a Chinese Windows) and would read them
+// as garbage.
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
 
 android {
     namespace "com.xrdevicekit.bridge"

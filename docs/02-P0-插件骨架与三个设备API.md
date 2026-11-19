@@ -111,7 +111,7 @@ UPL 是靠 `$${tag}$$` 这种标记做替换的。注释里出现同样的字面
 | 问题 | 改法 |
 |---|---|
 | 验证脚本假错 | 校验一律用 `[System.IO.File]::ReadAllText($p, UTF8)`，不用 `Get-Content` |
-| javac 编码风险 | `<insert>` 里的 **Java 注释全部改英文**；中文只留在 XML 注释里（不会进 Java 文件） |
+| javac 编码风险 | 当时的做法是 Java 注释全写英文。**后来改了**：给 Java 模块加 `options.encoding = "UTF-8"`，中文注释就没问题了，见 [04 文档](04-P1第二批-Java模块与独立Java类.md) |
 | 标记字面量 | 注释改成"gameActivityClassAdditions 占位符"，不写 `$` 符号 |
 
 改完的校验结果：

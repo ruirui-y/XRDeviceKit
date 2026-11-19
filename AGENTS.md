@@ -79,6 +79,7 @@ Plugins/XRDeviceKit/
 - **一个阶段一次提交**，不攒到最后
 - **代码提交前必须有"编译通过"的确认**；纯文档/配置提交可以直接提
 - **阶段文档不要写"学到什么"或经验总结类小节**，只保留过程、原始报错、实测数据、验收状态
+- **`additions.gradle` 与 UPL 的 `<insert>` 段必须纯 ASCII**（UAT 按 ANSI 拼接，中文会花）；Java 源码可以用中文注释，因为 `additions.gradle` 里已强制 `options.encoding = "UTF-8"`
 - **docs 下的文件名统一中文**，数字前缀、不带空格：`02-P0-插件骨架与三个设备API.md`
 
 ## 7. 不要做的事

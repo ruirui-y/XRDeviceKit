@@ -8,14 +8,14 @@ import android.os.SystemClock;
 import java.util.Locale;
 import java.util.TimeZone;
 
-// Entry point of the Java side of XRDeviceKit.
-// GameActivity calls Init() once from onCreate, then C++ calls the static methods
-// below through JNI. Everything here must stay static-friendly: no Activity needed.
-// All methods swallow their own exceptions and return a safe default, so nothing
-// ever leaks back into JNI as a pending Java exception.
+// XRDeviceKit 的 Java 侧入口。
+// GameActivity 在 onCreate 里调一次 Init()，之后 C++ 通过 JNI 调下面这些静态方法。
+// 这里的方法必须能脱离 Activity 使用，只靠 Application Context。
+// 每个方法自己吞异常并返回安全默认值，
+// 不让异常漏回 JNI 变成待处理异常（那样下一次 JNI 调用会崩）。
 public final class XRBridge
 {
-    // Application context, set once at startup. Application-level context never leaks.
+    // Application Context，启动时设一次；Application 级不会泄漏。
     private static Context sContext;
 
     private XRBridge()
@@ -31,10 +31,10 @@ public final class XRBridge
     }
 
     // ------------------------------------------------------------------
-    // App info
+    // 应用信息
     // ------------------------------------------------------------------
 
-    // Package name of the running app, e.g. com.YourCompany.XRDeviceKitDemo.
+    // 运行中的包名，例如 com.YourCompany.XRDeviceKitDemo。
     public static String GetPackageName()
     {
         try
@@ -51,7 +51,7 @@ public final class XRBridge
         }
     }
 
-    // Human readable version, e.g. "1.0".
+    // 版本名，例如 "1.0"。
     public static String GetVersionName()
     {
         try
@@ -65,13 +65,13 @@ public final class XRBridge
         }
     }
 
-    // Monotonic build number.
+    // 构建号，只增不减。
     public static long GetVersionCode()
     {
         try
         {
             PackageInfo info = ReadPackageInfo(sContext.getPackageName());
-            // longVersionCode exists since API 28, minSdk here is 29
+            // longVersionCode 从 API 28 才有，本模块 minSdk 是 29
             return info == null ? -1L : info.getLongVersionCode();
         }
         catch (Throwable t)
@@ -80,9 +80,9 @@ public final class XRBridge
         }
     }
 
-    // True when a package is installed and visible to us.
-    // Note: Android 11+ hides other packages unless they are declared in the
-    // manifest <queries> block. A false result may simply mean "not visible".
+    // 包已安装且对我们可见时返回 true。
+    // 注意：Android 11+ 会隐藏未在清单 <queries> 里声明的包，
+    // 返回 false 可能只是"看不见"，不代表没装。
     public static boolean IsAppInstalled(String packageName)
     {
         try
@@ -96,7 +96,7 @@ public final class XRBridge
     }
 
     // ------------------------------------------------------------------
-    // Screen
+    // 屏幕
     // ------------------------------------------------------------------
 
     public static int GetScreenWidth()
@@ -123,7 +123,7 @@ public final class XRBridge
         }
     }
 
-    // Density in dpi (e.g. 320 for a 2x screen).
+    // 屏幕密度 dpi，例如 2 倍屏是 320。
     public static int GetScreenDpi()
     {
         try
@@ -136,7 +136,7 @@ public final class XRBridge
         }
     }
 
-    // Scale factor relative to a 160 dpi baseline (e.g. 2.0 for a 2x screen).
+    // 相对 160dpi 的倍率，例如 2 倍屏是 2.0。
     public static float GetScreenDensity()
     {
         try
@@ -149,9 +149,9 @@ public final class XRBridge
         }
     }
 
-    // Max refresh rate the device can do (the physical panel supports several modes:
-    // 90 and 72 on the P1Max). The app itself renders on a virtual 2D display, so its own
-    // active mode is not the panel capability - we take the maximum over all displays' modes.
+    // 设备能跑的最高刷新率。物理屏支持多个模式（P1Max 上是 90 和 72），
+    // 而 App 自己画在 2D 虚拟屏上，
+    // 它的当前模式不代表面板能力，所以取所有屏幕模式里的最大值。
     public static float GetScreenRefreshRate()
     {
         try
@@ -185,7 +185,7 @@ public final class XRBridge
                 return best;
             }
 
-            // fallback: the display the window manager hands out
+            // 兜底：退回窗口管理器给的那块屏
             android.view.WindowManager wm =
                 (android.view.WindowManager) sContext.getSystemService(Context.WINDOW_SERVICE);
             if (wm == null)
@@ -201,7 +201,7 @@ public final class XRBridge
     }
 
     // ------------------------------------------------------------------
-    // Storage (values in megabytes)
+    // 存储（单位 MB）
     // ------------------------------------------------------------------
 
     public static long GetInternalFreeMegabytes()
@@ -235,10 +235,10 @@ public final class XRBridge
     }
 
     // ------------------------------------------------------------------
-    // System
+    // 系统
     // ------------------------------------------------------------------
 
-    // Seconds since boot, including deep sleep.
+    // 开机时长（秒），含深睡眠时间。
     public static long GetUptimeSeconds()
     {
         try
@@ -251,7 +251,7 @@ public final class XRBridge
         }
     }
 
-    // Time zone id, e.g. "Asia/Shanghai".
+    // 时区 ID，例如 "Asia/Shanghai"。
     public static String GetTimeZoneId()
     {
         try
@@ -264,7 +264,7 @@ public final class XRBridge
         }
     }
 
-    // Language tag, e.g. "zh-CN".
+    // 语言标签，例如 "zh-CN"。
     public static String GetLanguageTag()
     {
         try
@@ -278,10 +278,10 @@ public final class XRBridge
     }
 
     // ------------------------------------------------------------------
-    // Device build info
+    // 设备构建信息
     // ------------------------------------------------------------------
 
-    // Manufacturer, e.g. "DPVR" or "PICO".
+    // 厂商，例如 "DPVR"。
     public static String GetManufacturer()
     {
         try
@@ -294,7 +294,7 @@ public final class XRBridge
         }
     }
 
-    // Marketing model name, e.g. "PICO 4".
+    // 型号，例如 "P1Max"。
     public static String GetModel()
     {
         try
@@ -307,7 +307,7 @@ public final class XRBridge
         }
     }
 
-    // Industrial device name (ro.product.device), often the codename.
+    // 设备代号（ro.product.device），通常是内部代号。
     public static String GetDeviceName()
     {
         try
@@ -320,7 +320,7 @@ public final class XRBridge
         }
     }
 
-    // Supported ABIs, comma separated, e.g. "arm64-v8a,armeabi-v7a".
+    // 支持的 ABI，逗号分隔，例如 "arm64-v8a,armeabi-v7a"。
     public static String GetSupportedABIs()
     {
         try
@@ -334,10 +334,10 @@ public final class XRBridge
     }
 
     // ------------------------------------------------------------------
-    // App info (extra)
+    // 应用信息（补充）
     // ------------------------------------------------------------------
 
-    // First install time in milliseconds since epoch, or -1.
+    // 首次安装时间（毫秒时间戳），拿不到返回 -1。
     public static long GetFirstInstallTimeMs()
     {
         try
@@ -351,7 +351,7 @@ public final class XRBridge
         }
     }
 
-    // Last update time in milliseconds since epoch, or -1.
+    // 最后更新时间（毫秒时间戳），拿不到返回 -1。
     public static long GetLastUpdateTimeMs()
     {
         try
@@ -365,7 +365,7 @@ public final class XRBridge
         }
     }
 
-    // Display name shown under the launcher icon, e.g. "XRDeviceKitDemo".
+    // 桌面图标下面显示的名字，例如 "XRDeviceKitDemo"。
     public static String GetAppLabel()
     {
         try
@@ -379,9 +379,9 @@ public final class XRBridge
         }
     }
 
-    // Launch another app by package name.
-    // Android 11+ package visibility: a package that is not declared in the manifest
-    // <queries> block is invisible here, so this returns false even when it is installed.
+    // 按包名拉起另一个 App。
+    // Android 11+ 包可见性：没在清单 <queries> 里声明的包，
+    // 即使装了也返回 false。
     public static boolean StartApp(String packageName)
     {
         try
@@ -404,12 +404,12 @@ public final class XRBridge
     }
 
     // ------------------------------------------------------------------
-    // Audio (extra)
+    // 音频（补充）
     // ------------------------------------------------------------------
 
-    // Set media volume by percentage (0..100).
-    // The engine reports volume as 0..100, so this takes the same scale and converts
-    // to the platform's own index steps internally.
+    // 按百分比设置媒体音量（0~100）。
+    // 引擎的音量是 0~100，这里用同样的刻度，
+    // 内部再换算成设备自己的档位。
     public static boolean SetVolume(int percent)
     {
         try
@@ -422,9 +422,9 @@ public final class XRBridge
             }
             int maxIndex = am.getStreamMaxVolume(android.media.AudioManager.STREAM_MUSIC);
             int index = Math.round(percent / 100.0f * maxIndex);
-            // clamp: setStreamVolume with an out of range index throws on some devices
+            // 夹紧：部分设备上越界的档位会让 setStreamVolume 抛异常
             index = Math.max(0, Math.min(maxIndex, index));
-            // flags 0: no UI shown, no sound played
+            // flags 传 0：不弹音量条、不放提示音
             am.setStreamVolume(android.media.AudioManager.STREAM_MUSIC, index, 0);
             return true;
         }
@@ -435,11 +435,11 @@ public final class XRBridge
     }
 
     // ------------------------------------------------------------------
-    // Display (extra)
+    // 显示（补充）
     // ------------------------------------------------------------------
 
-    // System screen brightness in the platform's own scale (usually 0..255), or -1.
-    // Reading needs no permission; writing needs WRITE_SETTINGS, so there is no setter here.
+    // 系统亮度，用平台自己的刻度（一般是 0~255），拿不到返回 -1。
+    // 读不需要权限；写需要 WRITE_SETTINGS，所以这里不提供 setter。
     public static int GetSystemBrightness()
     {
         try
@@ -455,7 +455,7 @@ public final class XRBridge
         }
     }
 
-    // True when the system is in dark mode.
+    // 系统处于深色模式时返回 true。
     public static boolean IsNightMode()
     {
         try
@@ -471,11 +471,11 @@ public final class XRBridge
     }
 
     // ------------------------------------------------------------------
-    // Extra zero-permission queries
+    // 零权限查询（补充）
     // ------------------------------------------------------------------
 
-    // First non-loopback IPv4 address of an active interface, e.g. "192.168.1.23".
-    // Reading interfaces needs no permission; SSID does, so this is not the WiFi name.
+    // 第一个非回环的 IPv4 地址，例如 "192.168.1.23"。
+    // 读网卡不需要权限；拿 SSID 才需要，所以这个不是 WiFi 名称。
     public static String GetIpAddress()
     {
         try
@@ -509,7 +509,7 @@ public final class XRBridge
         }
     }
 
-    // Screen off timeout in milliseconds, -1 when unknown.
+    // 息屏超时（毫秒），拿不到返回 -1。
     public static int GetScreenOffTimeout()
     {
         try
@@ -525,7 +525,7 @@ public final class XRBridge
         }
     }
 
-    // Preferred language list, e.g. "zh-CN,en-US". Falls back to a single tag before API 24.
+    // 首选语言列表，例如 "zh-CN,en-US"；API 24 以下退化成单个标签。
     public static String GetLanguageList()
     {
         try
@@ -542,7 +542,7 @@ public final class XRBridge
         }
     }
 
-    // Ringer mode: 0 silent, 1 vibrate, 2 normal, -1 unknown (AudioManager.RINGER_MODE_*).
+    // 铃声模式：0 静音 / 1 振动 / 2 正常，-1 未知。
     public static int GetRingerMode()
     {
         try
@@ -557,8 +557,8 @@ public final class XRBridge
         }
     }
 
-    // Instant battery current in milliamps. The sign is vendor specific: on the P1Max it is
-    // NEGATIVE while charging. Use IsCharging to tell charge from discharge.
+    // 电池瞬时电流（毫安）。符号由厂商决定：P1Max 上充电时是负数，
+    // 判断充放电请用 IsCharging。
     public static int GetBatteryCurrentNow()
     {
         try
@@ -570,7 +570,7 @@ public final class XRBridge
                 return -1;
             }
             int microAmps = bm.getIntProperty(android.os.BatteryManager.BATTERY_PROPERTY_CURRENT_NOW);
-            // unsupported devices return Integer.MIN_VALUE
+            // 不支持的设备会返回 Integer.MIN_VALUE
             if (microAmps == Integer.MIN_VALUE)
             {
                 return -1;
@@ -583,8 +583,8 @@ public final class XRBridge
         }
     }
 
-    // Battery health, using the platform constants:
-    // 1 unknown / 2 good / 3 overheat / 4 dead / 5 over voltage / 6 failure / 7 cold
+    // 电池健康，用平台常量：
+    // 1 未知 / 2 良好 / 3 过热 / 4 损坏 / 5 过压 / 6 故障 / 7 过冷
     public static int GetBatteryHealth()
     {
         try
@@ -605,11 +605,11 @@ public final class XRBridge
     }
 
     // ------------------------------------------------------------------
-    // System event watchers (screen on/off, network)
+    // 系统事件监听（屏幕亮灭、网络变化）
     // ------------------------------------------------------------------
-    // These are the only "Java calls C++" entry points in this module. The native
-    // methods below are implemented in XRDeviceKitEventSubsystem.cpp and the JVM
-    // binds them by name, so renaming one side without the other crashes at runtime.
+    // 这是本模块唯一"Java 调 C++"的入口：下面的 native 方法在
+    // XRDeviceKitEventSubsystem.cpp 里实现，JVM 按名字绑定，
+    // 只改一边不改另一边会在运行时崩。
 
     public static native void OnScreenStateChanged(boolean isOn);
 
@@ -618,7 +618,7 @@ public final class XRBridge
     private static android.content.BroadcastReceiver sScreenReceiver;
     private static android.net.ConnectivityManager.NetworkCallback sNetworkCallback;
 
-    // Start listening for screen on/off. Safe to call twice.
+    // 开始监听屏幕亮灭，重复调用安全。
     public static void StartScreenWatcher()
     {
         try
@@ -646,7 +646,7 @@ public final class XRBridge
                     }
                     catch (Throwable t)
                     {
-                        // never let an exception escape into the system
+                        // 异常绝不能漏回系统
                     }
                 }
             };
@@ -675,7 +675,7 @@ public final class XRBridge
         sScreenReceiver = null;
     }
 
-    // Start listening for default network changes. Needs ACCESS_NETWORK_STATE.
+    // 开始监听默认网络变化，需要 ACCESS_NETWORK_STATE 权限。
     public static void StartNetworkWatcher()
     {
         try
@@ -744,10 +744,10 @@ public final class XRBridge
     }
 
     // ------------------------------------------------------------------
-    // internal helpers
+    // 内部辅助函数
     // ------------------------------------------------------------------
 
-    // PackageInfo for one package, or null when it is missing / not visible.
+    // 取某个包的 PackageInfo，不存在或不可见时返回 null。
     private static PackageInfo ReadPackageInfo(String packageName)
     {
         try
