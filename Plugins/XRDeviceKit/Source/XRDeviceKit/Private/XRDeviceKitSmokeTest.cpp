@@ -129,5 +129,29 @@ void UXRDeviceKitSmokeTestSubsystem::RunSmokeTest()
 	SMOKE_F("GetRenderFPS", L::GetRenderFPS());
 	SMOKE_F("GetFrameTimeMs", L::GetFrameTimeMs());
 
+	// ---- 写操作自检：设一遍再读回来，最后恢复原值 ----
+	{
+		// 亮度：记原值 → 设 0.3 → 读回
+		const float BrightnessBefore = L::GetBrightness();
+		L::SetBrightness(0.3f);
+		const float BrightnessAfter = L::GetBrightness();
+		L::SetBrightness(BrightnessBefore >= 0.0f ? BrightnessBefore : 0.8f);
+		UE_LOG(LogXRDeviceKitSmoke, Warning, TEXT("SMOKE|WRITE|brightness before=%.2f after=%.2f"),
+			BrightnessBefore, BrightnessAfter);
+
+		// 音量：记原值 → 设 50 → 读回 → 恢复
+		const int32 VolumeBefore = L::GetDeviceVolume();
+		const bool bSetVolumeOk = L::SetVolume(50);
+		const int32 VolumeAfter = L::GetDeviceVolume();
+		L::SetVolume(VolumeBefore);
+		UE_LOG(LogXRDeviceKitSmoke, Warning, TEXT("SMOKE|WRITE|volume before=%d after=%d setOk=%d"),
+			VolumeBefore, VolumeAfter, bSetVolumeOk ? 1 : 0);
+
+		// 振动：触发一次重的，再停
+		L::StartHaptics(2);
+		L::StopHaptics();
+		UE_LOG(LogXRDeviceKitSmoke, Warning, TEXT("SMOKE|WRITE|haptics invoked"));
+	}
+
 	UE_LOG(LogXRDeviceKitSmoke, Display, TEXT("SMOKE|__end=1"));
 }

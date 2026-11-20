@@ -424,8 +424,12 @@ public final class XRBridge
             int index = Math.round(percent / 100.0f * maxIndex);
             // 夹紧：部分设备上越界的档位会让 setStreamVolume 抛异常
             index = Math.max(0, Math.min(maxIndex, index));
+            int beforeIndex = am.getStreamVolume(android.media.AudioManager.STREAM_MUSIC);
             // flags 传 0：不弹音量条、不放提示音
             am.setStreamVolume(android.media.AudioManager.STREAM_MUSIC, index, 0);
+            int afterIndex = am.getStreamVolume(android.media.AudioManager.STREAM_MUSIC);
+            android.util.Log.i("XRBridge", "SetVolume percent=" + percent + " max=" + maxIndex
+                + " target=" + index + " before=" + beforeIndex + " after=" + afterIndex);
             return true;
         }
         catch (Throwable t)
