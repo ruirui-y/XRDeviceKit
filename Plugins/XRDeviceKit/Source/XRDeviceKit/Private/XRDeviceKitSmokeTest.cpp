@@ -124,6 +124,7 @@ void UXRDeviceKitSmokeTestSubsystem::RunSmokeTest()
 	SMOKE_I("GetBatteryCurrentNow", L::GetBatteryCurrentNow());
 	SMOKE_I("GetBatteryHealth", L::GetBatteryHealth());
 
+
 	// ---- 性能 ----
 	SMOKE_F("GetRenderFPS", L::GetRenderFPS());
 	SMOKE_F("GetFrameTimeMs", L::GetFrameTimeMs());

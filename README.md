@@ -78,6 +78,7 @@ XRDeviceKitDemo/                 UE 工程，用来开发、打包、真机验�
 | [docs/12-资源统计与硬件信息.md](docs/12-资源统计与硬件信息.md) | 资源采样怎么做的、哪些字段在 P1Max 拿得到 |
 | [docs/13-事件-屏幕与网络.md](docs/13-事件-屏幕与网络.md) | 事件机制：native 反向回调、线程切换、符号验证 |
 | [docs/14-插件独立打包验证.md](docs/14-插件独立打包验证.md) | BuildPlugin 怎么打、JavaLibs 差点丢包、包内容清单 |
+| [docs/15-大鹏SDK摸底.md](docs/15-大鹏SDK摸底.md) | QVR300 包里有什么、GSXR 为什么跑不起来、手柄电量在哪 |
 
 **内部记录**
 
