@@ -748,6 +748,214 @@ public final class XRBridge
     }
 
     // ------------------------------------------------------------------
+    // ------------------------------------------------------------------
+    // 大鹏 SDK 服务探针（com.deepoon.sdk.manager）
+    // ------------------------------------------------------------------
+    // 只做一件事：bind 上去，打印 binder 的接口描述符和 AIDL 版本号。
+    // 能连上说明第三方 App 可以访问；拿不到 AIDL 方法表之前不盲调业务方法。
+
+    private static boolean sSdkServiceBound = false;
+    private static String sSdkServiceDescriptor = "";
+
+    public static void StartSdkServiceProbe()
+    {
+        try
+        {
+            if (sSdkServiceBound || sContext == null)
+            {
+                return;
+            }
+            android.content.Intent intent = new android.content.Intent(
+                "com.deepoon.sdk.manager.service.DpnSdkService");
+            intent.setPackage("com.deepoon.sdk.manager");
+
+            android.content.ServiceConnection connection = new android.content.ServiceConnection()
+            {
+                @Override
+                public void onServiceConnected(android.content.ComponentName name, android.os.IBinder binder)
+                {
+                    try
+                    {
+                        String desc = binder == null ? "" : binder.getInterfaceDescriptor();
+                        sSdkServiceDescriptor = desc == null ? "" : desc;
+                        android.util.Log.i("XRBridge", "DpnSdkService 已连接: " + name
+                            + " desc=" + sSdkServiceDescriptor
+                            + " alive=" + (binder != null && binder.isBinderAlive()));
+
+                        android.os.Parcel data = android.os.Parcel.obtain();
+                        android.os.Parcel reply = android.os.Parcel.obtain();
+                        try
+                        {
+                            data.writeInterfaceToken(sSdkServiceDescriptor);
+                            boolean ok = binder.transact(16777215, data, reply, 0);
+                            int version = ok ? reply.readInt() : -1;
+                            android.util.Log.i("XRBridge", "DpnSdkService interfaceVersion=" + version + " ok=" + ok);
+                        }
+                        finally
+                        {
+                            reply.recycle();
+                            data.recycle();
+                        }
+                    }
+                    catch (Throwable t)
+                    {
+                        android.util.Log.i("XRBridge", "onServiceConnected 处理失败: " + t);
+                    }
+                }
+
+                @Override
+                public void onServiceDisconnected(android.content.ComponentName name)
+                {
+                    android.util.Log.i("XRBridge", "DpnSdkService 断开: " + name);
+                }
+            };
+
+            sSdkServiceBound = sContext.bindService(intent, connection, android.content.Context.BIND_AUTO_CREATE);
+            android.util.Log.i("XRBridge", "bindService(DpnSdkService) 返回 " + sSdkServiceBound);
+        }
+        catch (Throwable t)
+        {
+            android.util.Log.i("XRBridge", "bindService 异常: " + t);
+        }
+    }
+
+    public static String GetSdkServiceDescriptor()
+    {
+        return sSdkServiceDescriptor;
+    }
+    // ------------------------------------------------------------------
+    // 大鹏控制器服务（com.dpvr.controller）
+    // ------------------------------------------------------------------
+    // AIDL：com.dpvr.controller.manager.IControllerService
+    // transaction 表（从 APK 反编译得到）：
+    //   1 registerListener  2 unregisterListener  3 getOrientation  4 recenter
+    //   5 getBondDevice     6 setUnbindDevice     7 bootPair         8 getProperty  9 setProperty
+    // 属性名是 Attr_* 常量，例如 Attr_DeviceBatteryPercentage_Float。
+
+    private static android.os.IBinder sControllerBinder = null;
+
+    public static void StartControllerServiceProbe()
+    {
+        try
+        {
+            if (sControllerBinder != null || sContext == null)
+            {
+                return;
+            }
+            android.content.Intent intent = new android.content.Intent();
+            intent.setComponent(new android.content.ComponentName(
+                "com.dpvr.controller",
+                "com.dpvr.controller.device.ControllerDeviceService"));
+
+            android.content.ServiceConnection connection = new android.content.ServiceConnection()
+            {
+                @Override
+                public void onServiceConnected(android.content.ComponentName name, android.os.IBinder binder)
+                {
+                    try
+                    {
+                        sControllerBinder = binder;
+                        android.util.Log.i("XRBridge", "ControllerDeviceService 已连接 desc="
+                            + (binder == null ? "null" : binder.getInterfaceDescriptor()));
+
+                        String[] attrs = {
+                            "Attr_DeviceBatteryPercentage_Float",
+                            "Attr_BatteryStatus_Int32",
+                            "Attr_ChargeStatus_Int32",
+                            "Attr_BatteryTemperature_Float",
+                            "Attr_UserIpdMeters_Float",
+                            "Attr_Is6DoFTracking_Bool"
+                        };
+                        for (String attr : attrs)
+                        {
+                            android.util.Log.i("XRBridge", "PROP " + attr + " -> " + GetControllerProperty(attr));
+                        }
+                        android.util.Log.i("XRBridge", "BOND -> " + CallString(binder, 5));
+                    }
+                    catch (Throwable t)
+                    {
+                        android.util.Log.i("XRBridge", "ControllerDeviceService 处理失败: " + t);
+                    }
+                }
+
+                @Override
+                public void onServiceDisconnected(android.content.ComponentName name)
+                {
+                    sControllerBinder = null;
+                    android.util.Log.i("XRBridge", "ControllerDeviceService 断开");
+                }
+            };
+
+            boolean ok = sContext.bindService(intent, connection, android.content.Context.BIND_AUTO_CREATE);
+            android.util.Log.i("XRBridge", "bindService(ControllerDeviceService) 返回 " + ok);
+        }
+        catch (Throwable t)
+        {
+            android.util.Log.i("XRBridge", "bindService(controller) 异常: " + t);
+        }
+    }
+
+    // 调 IControllerService.getProperty(attr, key)，返回字符串结果或错误描述
+    public static String GetControllerProperty(String attrName)
+    {
+        if (sControllerBinder == null)
+        {
+            return "<未连接>";
+        }
+        android.os.Parcel data = android.os.Parcel.obtain();
+        android.os.Parcel reply = android.os.Parcel.obtain();
+        try
+        {
+            data.writeInterfaceToken("com.dpvr.controller.manager.IControllerService");
+            data.writeString(attrName);
+            data.writeString("");
+            boolean ok = sControllerBinder.transact(8, data, reply, 0);
+            if (!ok)
+            {
+                return "<transact false>";
+            }
+            reply.readException();
+            String value = reply.readString();
+            return value == null ? "<null>" : value;
+        }
+        catch (Throwable t)
+        {
+            return "<" + t + ">";
+        }
+        finally
+        {
+            reply.recycle();
+            data.recycle();
+        }
+    }
+
+    // 调无参、返回字符串的 transaction（例如 5 = getBondDevice）
+    private static String CallString(android.os.IBinder binder, int code)
+    {
+        android.os.Parcel data = android.os.Parcel.obtain();
+        android.os.Parcel reply = android.os.Parcel.obtain();
+        try
+        {
+            data.writeInterfaceToken("com.dpvr.controller.manager.IControllerService");
+            boolean ok = binder.transact(code, data, reply, 0);
+            if (!ok)
+            {
+                return "<transact false>";
+            }
+            reply.readException();
+            String value = reply.readString();
+            return value == null ? "<null>" : value;
+        }
+        catch (Throwable t)
+        {
+            return "<" + t + ">";
+        }
+        finally
+        {
+            reply.recycle();
+            data.recycle();
+        }
+    }
     // 内部辅助函数
     // ------------------------------------------------------------------
 

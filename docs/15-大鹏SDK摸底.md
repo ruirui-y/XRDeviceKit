@@ -149,3 +149,78 @@ adb pull /system/priv-app/HtcControllerService/HtcControllerService.apk
 ```
 
 > `QVR300/` 和拉下来的 `_dev_*` 文件都是外部素材，已加进 `.gitignore`，不进版本库。
+---
+
+## 9. 补充：他们的三个私有服务实测（2026-11-20 下午）
+
+### 9.1 `com.deepoon.sdk.manager` 的 `DpnSdkService` —— 能连
+
+```
+bindService(DpnSdkService) 返回 true
+DpnSdkService 已连接: desc=com.deepoon.sdk.manager.service.IDpnSdkService alive=true
+```
+
+反编译它的 dex，接口方法只有账号相关：
+
+```
+DESCRIPTOR, downloadCert, downloadCertificate, getLoginNickName,
+getLoginUserId, getLoginUserName, getSerialNo, getTime, getUserId,
+hasNetwork, isLogin, isOneRegister, logout
+```
+
+`getSerialNo` 是设备 SN，我们的 `GetDeviceId` 拿不到，有价值；其余是登录/下载证书。
+
+### 9.2 `com.dpvr.controller` 的 `ControllerDeviceService` —— **一连就崩**
+
+```
+bindService(ControllerDeviceService) 返回 true
+Start proc com.dpvr.controller for service {...ControllerDeviceService}
+Scheduling restart of crashed service com.dpvr.controller/.device.ControllerDeviceService
+F/libc: Fatal signal 11 (SIGSEGV) pid 25419 (dpvr.controller)
+```
+
+**他们的服务进程自己崩了**（我们的 App 没事），重启后又崩一次。
+
+它的 AIDL（从 APK 反编译得到）其实很完整：
+
+| transaction | 方法 | 签名 |
+|---|---|---|
+| 1 | `registerListener` | (String, IControllerServiceListener) → bool |
+| 2 | `unregisterListener` | 同上 |
+| 3 | `getOrientation` | () → Quat |
+| 4 | `recenter` | () → bool |
+| 5 | `getBondDevice` | () → String |
+| 6 | `setUnbindDevice` | () → void |
+| 7 | `bootPair` | (bool) → void |
+| 8 | `getProperty` | (String, String) → String |
+| 9 | `setProperty` | (String, String) → String |
+
+属性名常量（`Attr_*`）：
+
+```
+Attr_DeviceBatteryPercentage_Float   ← 头显电量
+Attr_BatteryStatus_Int32
+Attr_ChargeStatus_Int32
+Attr_BatteryTemperature_Float
+Attr_UserIpdMeters_Float             ← IPD
+Attr_Is6DoFTracking_Bool
+Attr_6DofWorkArea_Uint64
+Attr_DeviceErrorStatus_Uint64
+...
+```
+
+**结论：接口存在而且很全，但第三方直接 bind 会把他们服务搞崩，不能用。**
+
+### 9.3 这台设备上的 SVR 库不可用
+
+```
+dlopen libsvrapi.so 失败: library "libsvrapi.so" not found
+```
+
+Android 命名空间限制：非 NDK 公开库不能按名字加载。它的依赖里还有 `libdeepoon_sdk_impl.so`（在 `/system/priv-app/SdkManager_XR2/lib/arm64/`），属于私有目录，第三方同样碰不到。
+
+### 9.4 这轮之后的做法
+
+实验代码已全部撤回（冒烟里不再调用任何厂商服务），只保留结论。
+
+**要拿到手柄电量/设备属性，只有一条正路：让文轩给一个给第三方用的 SDK（aar + 权限说明），或者他们自己把 `ControllerDeviceService` 调稳。**

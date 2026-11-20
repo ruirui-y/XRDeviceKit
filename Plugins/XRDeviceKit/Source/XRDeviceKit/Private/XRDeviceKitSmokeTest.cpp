@@ -2,6 +2,8 @@
 // 用固定前缀是为了在 logcat 里能直接 findstr "SMOKE|"。
 
 #include "XRDeviceKitSmokeTest.h"
+#include "XRDeviceKitSVR.h"
+#include "XRDeviceKitJava.h"
 #include "XRDeviceKitLibrary.h"
 #include "XRDeviceKitTypes.h"
 #include "Containers/Ticker.h"
@@ -152,6 +154,19 @@ void UXRDeviceKitSmokeTestSubsystem::RunSmokeTest()
 		L::StopHaptics();
 		UE_LOG(LogXRDeviceKitSmoke, Warning, TEXT("SMOKE|WRITE|haptics invoked"));
 	}
+
+	// ---- 设备自带 libsvrapi.so 探针（不需要手柄）----
+	{
+		const XRDeviceKit::SVR::FProbeResult SV = XRDeviceKit::SVR::Probe();
+		UE_LOG(LogXRDeviceKitSmoke, Warning, TEXT("SMOKE|SVR|client=%s service=%s info=%d"),
+			*SV.ClientVersion, *SV.ServiceVersion, SV.bDeviceInfoOk ? 1 : 0);
+		UE_LOG(LogXRDeviceKitSmoke, Warning, TEXT("SMOKE|SVR|display=%dx%d %.1fHz eye=%dx%d fov=%.3f/%.3f warp=%d perf=%d"),
+			SV.DisplayWidth, SV.DisplayHeight, SV.RefreshRateHz,
+			SV.EyeBufferWidth, SV.EyeBufferHeight, SV.FovXRad, SV.FovYRad, SV.WarpMeshType, SV.SetPerfResult);
+	}
+
+	// ---- 大鹏 SDK 服务：能不能 bind 上 ----
+	XRDeviceKit::Java::StartSdkServiceProbe();
 
 	UE_LOG(LogXRDeviceKitSmoke, Display, TEXT("SMOKE|__end=1"));
 }

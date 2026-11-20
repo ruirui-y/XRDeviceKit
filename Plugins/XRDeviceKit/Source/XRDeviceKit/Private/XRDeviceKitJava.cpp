@@ -463,6 +463,15 @@ void XRDeviceKit::Java::StopNetworkWatcher()
 #endif
 }
 
+// ==================== 大鹏 SDK 服务探针 ====================
+
+void XRDeviceKit::Java::StartSdkServiceProbe()
+{
+#if PLATFORM_ANDROID
+	CallVoid("StartSdkServiceProbe");
+#endif
+}
+
 // ==================== 零权限查询（补充） ====================
 
 FString XRDeviceKit::Java::GetIpAddress()

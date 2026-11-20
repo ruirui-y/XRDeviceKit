@@ -65,5 +65,8 @@ void StartScreenWatcher();                                                      
 void StopScreenWatcher();                                                           // 停止监听亮屏/灭屏
 void StartNetworkWatcher();                                                         // 开始监听网络变化
 void StopNetworkWatcher();                                                          // 停止监听网络变化
+
+// ---------- 大鹏 SDK 服务探针 ----------
+void StartSdkServiceProbe();                                                        // bind com.deepoon.sdk.manager 并打印描述符
 }
 }
